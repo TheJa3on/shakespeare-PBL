@@ -6,963 +6,1001 @@
 <title>Lear, Lover, or Lunatic: Mapping Shakespeare for the Streaming Library</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --fall: #8B2020;
-    --fall-light: #F5E8E8;
-    --fade: #3C3489;
-    --fade-light: #EEEDFE;
-    --rise: #085041;
-    --rise-light: #E1F5EE;
-    --valley: #0C447C;
-    --valley-light: #E6F1FB;
-    --arch: #633806;
-    --arch-light: #FAEEDA;
-    --plateau: #444441;
-    --plateau-light: #F1EFE8;
-    --ink: #1a1a18;
-    --muted: #6b6b68;
-    --rule: #dddbd3;
-    --page: #EFEFED;
-    --card: #F7F7F5;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--page);
-    color: var(--ink);
-    font-size: 15px;
-    line-height: 1.7;
-  }
-
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0;
-    background: rgba(239,239,237,0.94);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--rule);
-    z-index: 100;
-    padding: 0 40px;
-    display: flex;
-    align-items: center;
-    gap: 28px;
-    height: 52px;
-    overflow-x: auto;
-  }
-  nav a {
-    font-size: 11px; font-weight: 500;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--muted); text-decoration: none;
-    white-space: nowrap; transition: color 0.2s;
-  }
-  nav a:hover { color: var(--ink); }
-  nav .nav-logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 14px; font-weight: 900;
-    color: var(--ink); margin-right: 12px;
-    flex-shrink: 0;
-  }
-
-  /* HERO */
-  .hero {
-    padding: 140px 60px 80px;
-    max-width: 960px; margin: 0 auto;
-    border-bottom: 1px solid var(--rule);
-  }
-  .hero-label {
-    font-size: 11px; font-weight: 500;
-    letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 20px;
-  }
-  .hero h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(38px, 5.5vw, 68px);
-    font-weight: 900; line-height: 1.08;
-    letter-spacing: -0.02em; margin-bottom: 12px;
-  }
-  .hero h1 .accent-fall { color: var(--fall); }
-  .hero h1 .accent-fade { color: var(--fade); }
-  .hero h1 .accent-rise { color: var(--rise); }
-  .hero h1 em { font-style: italic; color: var(--muted); }
-  .hero-sub {
-    font-size: 17px; color: var(--muted);
-    max-width: 620px; line-height: 1.65; margin-bottom: 36px;
-  }
-  .hero-team {
-    margin-bottom: 36px;
-    font-size: 14px; line-height: 2;
-  }
-  .hero-team .team-label {
-    font-size: 11px; font-weight: 500;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 6px;
-  }
-  .hero-meta { display: flex; gap: 40px; flex-wrap: wrap; }
-  .hero-stat .num {
-    font-family: 'Playfair Display', serif;
-    font-size: 34px; font-weight: 700; display: block;
-  }
-  .hero-stat .lbl {
-    font-size: 11px; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--muted);
-  }
-
-  /* TYPE COLOR ACCENTS ON STAT NUMS */
-  .num-fall { color: var(--fall); }
-  .num-fade { color: var(--fade); }
-  .num-rise { color: var(--rise); }
-  .num-valley { color: var(--valley); }
-
-  /* SECTION */
-  .section {
-    max-width: 960px; margin: 0 auto;
-    padding: 80px 60px;
-    border-bottom: 1px solid var(--rule);
-  }
-  .section-label {
-    font-size: 11px; font-weight: 500;
-    letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 16px;
-  }
-  .section h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 30px; font-weight: 700;
-    margin-bottom: 24px; line-height: 1.2;
-  }
-  .section h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px; font-weight: 700;
-    margin: 36px 0 12px;
-  }
-  .section p { color: var(--muted); margin-bottom: 16px; max-width: 700px; }
-
-  /* COLORED SECTION HEADINGS */
-  .h2-fall { color: var(--fall); }
-  .h2-fade { color: var(--fade); }
-  .h2-rise { color: var(--rise); }
-  .h2-valley { color: var(--valley); }
-  .h2-arch { color: var(--arch); }
-  .h2-plateau { color: var(--plateau); }
-
-  /* CALLOUT BLOCK */
-  .callout {
-    background: var(--card);
-    border: 1px solid var(--rule);
-    border-left: 4px solid;
-    border-radius: 0 8px 8px 0;
-    padding: 20px 24px;
-    margin: 24px 0;
-    font-size: 14px; color: var(--muted);
-  }
-  .callout strong { color: var(--ink); }
-
-  /* METHOD STEPS */
-  .method-steps {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 20px; margin-top: 28px;
-  }
-  .method-step {
-    background: var(--card); border: 1px solid var(--rule);
-    border-radius: 8px; padding: 24px;
-  }
-  .method-step .step-num {
-    font-family: 'DM Mono', monospace; font-size: 11px;
-    color: var(--muted); margin-bottom: 8px; display: block;
-  }
-  .method-step h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 16px; font-weight: 700;
-    margin: 0 0 8px;
-  }
-  .method-step p { font-size: 13px; margin: 0; }
-
-  /* CRITERIA TABLE */
-  .criteria-table {
-    width: 100%; border-collapse: collapse;
-    margin-top: 28px; font-size: 13px;
-  }
-  .criteria-table th {
-    text-align: left; font-size: 11px;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--muted); padding: 8px 16px;
-    border-bottom: 2px solid var(--rule); font-weight: 500;
-  }
-  .criteria-table td {
-    padding: 10px 16px; border-bottom: 1px solid var(--rule);
-    vertical-align: top;
-  }
-  .criteria-table td:first-child {
-    font-family: 'DM Mono', monospace; font-size: 12px;
-    color: var(--ink); white-space: nowrap; font-weight: 500;
-  }
-
-  /* CHOICE BOX - for methodology reasoning */
-  .choice-box {
-    background: var(--card);
-    border: 1px solid var(--rule);
-    border-radius: 8px; padding: 24px 28px;
-    margin: 20px 0;
-  }
-  .choice-box .choice-q {
-    font-size: 13px; font-weight: 500;
-    color: var(--muted); margin-bottom: 10px;
-    font-family: 'DM Mono', monospace;
-  }
-  .choice-box p { font-size: 14px; margin: 0 0 10px; color: var(--muted); max-width: 100%; }
-  .choice-box p:last-child { margin-bottom: 0; }
-
-  /* TYPE SECTIONS */
-  .type-section {
-    max-width: 960px; margin: 0 auto;
-    padding: 80px 60px;
-    border-bottom: 1px solid var(--rule);
-  }
-  .type-header {
-    display: flex; align-items: flex-start; gap: 20px;
-    margin-bottom: 40px; padding-bottom: 32px;
-    border-bottom: 1px solid var(--rule);
-  }
-  .type-number {
-    font-family: 'Playfair Display', serif;
-    font-size: 72px; font-weight: 900;
-    line-height: 1; flex-shrink: 0; opacity: 0.15;
-  }
-  .type-header-content { flex: 1; }
-  .type-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 11px; font-weight: 500;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 4px 14px; border-radius: 20px; margin-bottom: 12px;
-  }
-  .type-header-content h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 40px; font-weight: 900;
-    letter-spacing: -0.02em; line-height: 1.08; margin-bottom: 8px;
-  }
-  .type-tagline { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
-  .type-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag {
-    font-size: 12px; padding: 3px 10px; border-radius: 4px;
-    border: 1px solid; font-family: 'DM Mono', monospace;
-  }
-
-  /* REP WORK */
-  .rep-work { margin-bottom: 44px; }
-  .rep-label {
-    font-size: 11px; font-weight: 500;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 12px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .rep-label::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
-  .rep-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px; font-weight: 700; margin-bottom: 20px; font-style: italic;
-  }
-  .rep-images {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 16px; margin-bottom: 20px;
-  }
-  .rep-img-wrap {
-    background: var(--card); border: 1px solid var(--rule);
-    border-radius: 6px; overflow: hidden;
-  }
-  .rep-img-wrap .img-label {
-    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--muted); padding: 8px 12px;
-    border-bottom: 1px solid var(--rule); font-weight: 500;
-  }
-  .rep-img-wrap img { width: 100%; display: block; aspect-ratio: 4/3; object-fit: cover; }
-
-  /* METRICS */
-  .metrics-row {
-    display: flex; background: var(--card);
-    border: 1px solid var(--rule); border-radius: 6px;
-    overflow: hidden; margin-bottom: 20px;
-  }
-  .metric-cell {
-    flex: 1; padding: 14px 16px;
-    border-right: 1px solid var(--rule); text-align: center;
-  }
-  .metric-cell:last-child { border-right: none; }
-  .metric-cell .m-val {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px; font-weight: 700; display: block;
-  }
-  .metric-cell .m-lbl {
-    font-size: 10px; letter-spacing: 0.06em;
-    text-transform: uppercase; color: var(--muted);
-  }
-
-  /* NETWORK NOTE */
-  .network-note {
-    background: var(--card); border: 1px solid var(--rule);
-    border-left: 3px solid; border-radius: 0 6px 6px 0;
-    padding: 16px 20px; font-size: 13px; color: var(--muted);
-    margin-bottom: 28px;
-  }
-
-  /* AUDIENCE BOX */
-  .audience-box {
-    background: var(--card); border: 1px solid var(--rule);
-    border-radius: 8px; padding: 24px; margin-bottom: 40px;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
-  }
-  .audience-box h4 {
-    font-family: 'Playfair Display', serif;
-    font-size: 14px; font-weight: 700; margin-bottom: 8px;
-  }
-  .audience-box p { font-size: 13px; margin: 0; }
-
-  /* PLAY LIST */
-  .plays-section-label {
-    font-size: 11px; font-weight: 500;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 20px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .plays-section-label::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
-  .play-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-    gap: 20px;
-  }
-  .play-card {
-    background: var(--card); border: 1px solid var(--rule);
-    border-radius: 8px; overflow: hidden;
-  }
-  .play-card-head {
-    padding: 14px 16px; border-bottom: 1px solid var(--rule);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .play-card-head h4 {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px; font-weight: 700; font-style: italic;
-  }
-  .play-card-head .slope-badge {
-    font-family: 'DM Mono', monospace; font-size: 11px;
-    padding: 2px 8px; border-radius: 4px;
-    border: 1px solid var(--rule); color: var(--muted);
-  }
-  .play-card-images { display: grid; grid-template-columns: 1fr 1fr; }
-  .play-card-images img {
-    width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block;
-    border-right: 1px solid var(--rule);
-  }
-  .play-card-images img:last-child { border-right: none; }
-  .play-card-meta {
-    padding: 10px 16px; display: flex; gap: 16px;
-    border-top: 1px solid var(--rule);
-  }
-  .play-card-meta span {
-    font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace;
-  }
-
-  /* OVERVIEW TABLE */
-  .overview-table {
-    width: 100%; border-collapse: collapse;
-    font-size: 13px; margin-top: 28px;
-  }
-  .overview-table th {
-    text-align: left; font-size: 11px;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--muted); padding: 8px 14px;
-    border-bottom: 2px solid var(--rule); font-weight: 500; white-space: nowrap;
-  }
-  .overview-table td {
-    padding: 9px 14px; border-bottom: 1px solid var(--rule); vertical-align: middle;
-  }
-  .overview-table tr:hover td { background: rgba(0,0,0,0.02); }
-  .type-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    display: inline-block; margin-right: 6px; flex-shrink: 0;
-  }
-
-  /* FINDING CARDS */
-  .finding-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 20px; margin-top: 28px;
-  }
-  .finding-card {
-    background: var(--card); border: 1px solid var(--rule);
-    border-radius: 8px; padding: 24px;
-  }
-  .finding-num {
-    font-family: 'DM Mono', monospace; font-size: 11px;
-    color: var(--muted); display: block; margin-bottom: 10px;
-  }
-  .finding-card h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 16px; font-weight: 700; margin: 0 0 10px; line-height: 1.35;
-  }
-  .finding-card p { font-size: 13px; color: var(--muted); margin: 0; }
-
-  footer {
-    text-align: center; padding: 60px; color: var(--muted); font-size: 12px;
-  }
-  footer p { margin-bottom: 4px; }
-
-  @media (max-width: 700px) {
-    .hero, .section, .type-section { padding: 60px 24px; }
-    .rep-images, .method-steps, .finding-grid { grid-template-columns: 1fr; }
-    .play-grid { grid-template-columns: 1fr; }
-    .audience-box { grid-template-columns: 1fr; }
+  :root{
+    --fall:#8B2020;--fall-light:#F5E8E8;--fade:#3C3489;--fade-light:#EEEDFE;
+    --rise:#085041;--rise-light:#E1F5EE;--valley:#0C447C;--valley-light:#E6F1FB;
+    --arch:#633806;--arch-light:#FAEEDA;--plateau:#444441;--plateau-light:#F1EFE8;
+    --ink:#1a1a18;--muted:#6b6b68;--rule:#dddbd3;--page:#EFEFED;--card:#F7F7F5;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'DM Sans',sans-serif;background:var(--page);color:var(--ink);font-size:15px;line-height:1.7;}
+  nav{position:fixed;top:0;left:0;right:0;background:rgba(239,239,237,0.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule);z-index:100;padding:0 40px;display:flex;align-items:center;gap:24px;height:52px;overflow-x:auto;}
+  nav a{font-size:11px;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);text-decoration:none;white-space:nowrap;transition:color 0.2s;}
+  nav a:hover{color:var(--ink);}
+  nav .nav-logo{font-family:'Playfair Display',serif;font-size:14px;font-weight:900;color:var(--ink);margin-right:12px;flex-shrink:0;}
+  .hero{padding:140px 60px 80px;max-width:960px;margin:0 auto;border-bottom:1px solid var(--rule);}
+  .hero-label{font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;}
+  .hero h1{font-family:'Playfair Display',serif;font-size:clamp(38px,5.5vw,68px);font-weight:900;line-height:1.08;letter-spacing:-0.02em;margin-bottom:12px;}
+  .hero h1 .a-fall{color:var(--fall);}.hero h1 .a-fade{color:var(--fade);}.hero h1 .a-rise{color:var(--rise);}
+  .hero h1 em{font-style:italic;color:var(--muted);}
+  .hero-sub{font-size:17px;color:var(--muted);max-width:620px;line-height:1.65;margin-bottom:36px;}
+  .hero-team{margin-bottom:36px;font-size:14px;line-height:2;}
+  .hero-team .tl{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .hero-meta{display:flex;gap:40px;flex-wrap:wrap;}
+  .hero-stat .num{font-family:'Playfair Display',serif;font-size:34px;font-weight:700;display:block;}
+  .hero-stat .lbl{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);}
+  .n-fall{color:var(--fall);}.n-fade{color:var(--fade);}.n-rise{color:var(--rise);}.n-valley{color:var(--valley);}
+  .section{max-width:960px;margin:0 auto;padding:80px 60px;border-bottom:1px solid var(--rule);}
+  .section-label{font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+  .section h2{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;margin-bottom:24px;line-height:1.2;}
+  .section h3{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin:36px 0 12px;}
+  .section p{color:var(--muted);margin-bottom:16px;max-width:700px;}
+  .callout{background:var(--card);border:1px solid var(--rule);border-left:4px solid;border-radius:0 8px 8px 0;padding:20px 24px;margin:24px 0;font-size:14px;color:var(--muted);}
+  .callout strong{color:var(--ink);}
+  .method-steps{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:28px;}
+  .method-step{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:24px;}
+  .method-step .sn{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:8px;display:block;}
+  .method-step h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin:0 0 8px;}
+  .method-step p{font-size:13px;margin:0;}
+  .choice-box{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:24px 28px;margin:20px 0;}
+  .choice-box .cq{font-size:13px;font-weight:500;color:var(--muted);margin-bottom:10px;font-family:'DM Mono',monospace;}
+  .choice-box p{font-size:14px;margin:0;color:var(--muted);max-width:100%;}
+  .criteria-table{width:100%;border-collapse:collapse;margin-top:28px;font-size:13px;}
+  .criteria-table th{text-align:left;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:8px 16px;border-bottom:2px solid var(--rule);font-weight:500;}
+  .criteria-table td{padding:10px 16px;border-bottom:1px solid var(--rule);vertical-align:top;}
+  .criteria-table td:first-child{font-family:'DM Mono',monospace;font-size:12px;color:var(--ink);font-weight:500;}
+  .overview-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:20px;}
+  .overview-table th{text-align:left;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:10px 14px;border-bottom:2px solid var(--rule);font-weight:500;}
+  .overview-table td{padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:top;}
+  .overview-table tr:hover td{background:rgba(0,0,0,0.02);}
+  .type-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:7px;}
+  .type-section{max-width:960px;margin:0 auto;padding:80px 60px;border-bottom:1px solid var(--rule);}
+  .type-header{display:flex;align-items:flex-start;gap:20px;margin-bottom:40px;padding-bottom:32px;border-bottom:1px solid var(--rule);}
+  .type-number{font-family:'Playfair Display',serif;font-size:72px;font-weight:900;line-height:1;flex-shrink:0;opacity:0.18;}
+  .type-hc{flex:1;}
+  .type-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:4px 14px;border-radius:20px;margin-bottom:12px;}
+  .type-hc h2{font-family:'Playfair Display',serif;font-size:40px;font-weight:900;letter-spacing:-0.02em;line-height:1.08;margin-bottom:10px;}
+  .type-keyword{font-family:'DM Mono',monospace;font-size:14px;margin-bottom:8px;font-weight:500;}
+  .type-tagline{font-size:14px;color:var(--muted);}
+  .rep-label{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin:32px 0 12px;display:flex;align-items:center;gap:8px;}
+  .rep-label::after{content:'';flex:1;height:1px;background:var(--rule);}
+  .rep-images{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+  .rep-img-wrap{background:var(--card);border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+  .rep-img-wrap .il{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:8px 12px;border-bottom:1px solid var(--rule);font-weight:500;}
+  .rep-img-wrap img{width:100%;display:block;aspect-ratio:1/1;object-fit:contain;background:#EDEDEB;}
+  .metrics-row{display:flex;background:var(--card);border:1px solid var(--rule);border-radius:6px;overflow:hidden;margin:20px 0;}
+  .metric-cell{flex:1;padding:14px 12px;border-right:1px solid var(--rule);text-align:center;}
+  .metric-cell:last-child{border-right:none;}
+  .metric-cell .mv{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;display:block;}
+  .metric-cell .ml{font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);}
+  .network-note{background:var(--card);border:1px solid var(--rule);border-left:3px solid;border-radius:0 6px 6px 0;padding:16px 20px;font-size:13px;color:var(--muted);margin:20px 0;}
+  .audience-box{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:22px 24px;margin:24px 0;}
+  .audience-box h4{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;margin-bottom:8px;}
+  .audience-box p{font-size:13px;margin:0 0 12px;color:var(--muted);}
+  .streaming-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:12px;padding:6px 12px;border-radius:6px;font-weight:500;}
+  .plays-label{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin:32px 0 16px;display:flex;align-items:center;gap:8px;}
+  .plays-label::after{content:'';flex:1;height:1px;background:var(--rule);}
+  .play-card{background:var(--card);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-bottom:16px;}
+  .play-card-head{padding:12px 16px;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .play-card-head h4{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;font-style:italic;}
+  .play-card-head .sb{font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid var(--rule);color:var(--muted);white-space:nowrap;}
+  .play-body{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+  .play-imgs{display:grid;grid-template-columns:1fr 1fr;border-right:1px solid var(--rule);}
+  .play-imgs img{width:100%;aspect-ratio:1/1;object-fit:contain;background:#EDEDEB;display:block;border-right:1px solid var(--rule);}
+  .play-imgs img:last-child{border-right:none;}
+  .play-text{padding:14px 16px;}
+  .play-text .syn{font-size:12px;font-style:italic;color:var(--muted);margin-bottom:8px;line-height:1.5;}
+  .play-text .why{font-size:12px;color:var(--ink);line-height:1.55;}
+  .play-meta{padding:8px 16px;display:flex;gap:14px;border-top:1px solid var(--rule);background:rgba(0,0,0,0.01);}
+  .play-meta span{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;}
+  .boundary-note{background:var(--card);border:1px dashed var(--muted);border-radius:8px;padding:16px 20px;font-size:13px;color:var(--muted);margin-top:8px;}
+  .boundary-note strong{color:var(--ink);}
+  .finding-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:28px;}
+  .finding-card{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:24px;}
+  .finding-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:block;margin-bottom:10px;}
+  .finding-card h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin:0 0 10px;line-height:1.35;}
+  .finding-card p{font-size:13px;color:var(--muted);margin:0;}
+  footer{text-align:center;padding:60px;color:var(--muted);font-size:12px;}
+  footer p{margin-bottom:4px;}
+  @media (max-width:760px){
+    .hero,.section,.type-section{padding:60px 24px;}
+    .rep-images,.method-steps,.finding-grid{grid-template-columns:1fr;}
+    .play-body{grid-template-columns:1fr;}
+    .play-imgs{border-right:none;border-bottom:1px solid var(--rule);}
   }
 </style>
 </head>
 <body>
-
 <nav>
   <span class="nav-logo">L·L·L</span>
   <a href="#introduction">Introduction</a>
   <a href="#methodology">Methodology</a>
-  <a href="#type1">The Fall</a>
-  <a href="#type2">Warm &amp; Bitter</a>
-  <a href="#type3">Against the Odds</a>
-  <a href="#type4">Break &amp; Mend</a>
-  <a href="#type5">Too High to Fall</a>
-  <a href="#type6">Words Over Action</a>
-  <a href="#overview">Index</a>
-  <a href="#reflection">Reflection</a>
+  <a href="#overview">The Six Types</a>
+  <a href="#macbeth">Macbeth</a>
+  <a href="#much-ado">Much Ado</a>
+  <a href="#as-you-like-it">As You Like It</a>
+  <a href="#henry-v">Henry V</a>
+  <a href="#othello">Othello</a>
+  <a href="#lll">Love's Labor's Lost</a>
+  <a href="#conclusion">Conclusion</a>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
-  <p class="hero-label">PBL Module 2 · Streaming Curation System · 2026</p>
-  <h1>
-    <span class="accent-fall">Lear,</span>
-    <span class="accent-fade"> Lover,</span>
-    <span class="accent-rise"> or Lunatic:</span><br>
-    <em>Mapping Shakespeare for the Streaming Library</em>
-  </h1>
+  <p class="hero-label">PBL Module 2 Report · 디지털영어학입문 · 이종현 교수</p>
+  <h1><span class="a-fall">Lear,</span><span class="a-fade"> Lover,</span><span class="a-rise"> or Lunatic:</span><br><em>Mapping Shakespeare for the Streaming Library</em></h1>
   <p class="hero-sub">A data-driven typology of Shakespeare's 37 plays, derived from sentiment curve analysis and character network structure — built for streaming service curation without reference to traditional genre labels.</p>
-
   <div class="hero-team">
-    <div class="team-label">Team</div>
+    <div class="tl">Team</div>
     <strong>우재성</strong> (Leader) &nbsp;·&nbsp; 김현아 &nbsp;·&nbsp; 주지현 &nbsp;·&nbsp; 진일명
   </div>
-
   <div class="hero-meta">
-    <div class="hero-stat">
-      <span class="num num-fall">37</span>
-      <span class="lbl">Plays Analyzed</span>
-    </div>
-    <div class="hero-stat">
-      <span class="num num-fade">6</span>
-      <span class="lbl">Emotional Types</span>
-    </div>
-    <div class="hero-stat">
-      <span class="num num-rise">2</span>
-      <span class="lbl">Data Dimensions</span>
-    </div>
-    <div class="hero-stat">
-      <span class="num num-valley">0</span>
-      <span class="lbl">Pre-assigned Genres</span>
-    </div>
+    <div class="hero-stat"><span class="num n-fall">37</span><span class="lbl">Plays Analyzed</span></div>
+    <div class="hero-stat"><span class="num n-fade">6</span><span class="lbl">Emotional Types</span></div>
+    <div class="hero-stat"><span class="num n-rise">2</span><span class="lbl">Data Dimensions</span></div>
+    <div class="hero-stat"><span class="num n-valley">0</span><span class="lbl">Pre-assigned Genres</span></div>
   </div>
 </div>
 
-<!-- INTRODUCTION -->
 <div id="introduction" class="section">
   <p class="section-label">01 — Introduction</p>
-  <h2 class="h2-fall">Why Reclassify Shakespeare?</h2>
-
-  <p>Shakespeare's 37 plays have been sorted into the same three buckets for four centuries: comedies, tragedies, and histories. This taxonomy was practical for the stage — it told actors what costumes to prepare and audiences what emotional contract to expect. But it was never designed to answer the question a streaming platform faces every day: <em>what should I recommend to this viewer, right now?</em></p>
-
-  <p>The problem is not that the old categories are wrong. It is that they are too coarse for the granularity that modern recommendation systems require. "Tragedy" covers both the slow domestic suffocation of <em>Othello</em> and the sprawling political collapse of <em>Julius Caesar</em>. "Comedy" bundles the sharp, dark irony of <em>Measure for Measure</em> together with the breezy pastoral warmth of <em>As You Like It</em>. A viewer who loved one would not necessarily enjoy the other — and an algorithm that treats them as equivalent is failing its users.</p>
-
-  <p>There is a deeper problem too. Genre labels are descriptive, not experiential. They describe what a work <em>is</em> — its structural and formal properties as defined by literary tradition — but they say almost nothing about what it <em>feels like</em> to watch it. The viewer's experience is shaped by two things above all else: how the emotional register moves over the course of the work, and how the characters are connected to each other. Neither of these is captured by genre.</p>
-
-  <div class="callout" style="border-left-color: var(--fall);">
-    <strong>Research Question:</strong> If we set aside inherited genre labels entirely and classify Shakespeare's 37 plays using only measurable emotional trajectory and character network structure, what patterns emerge — and do those patterns better serve streaming curation than comedy / tragedy / history?
-  </div>
-
-  <p>This project answers that question empirically. We analyzed two dimensions that directly govern viewing experience: the shape of the emotional arc across acts, and the structural properties of the character relationship network. By combining these dimensions across all 37 plays, six distinct types emerged from the data — each grouping works that produce a recognizably similar emotional experience, regardless of their traditional genre classification.</p>
-
-  <p>The result is a curation system that organizes Shakespeare not by what scholars have said about these works, but by what viewers actually feel when they watch them.</p>
+  <h2 style="color:var(--fall)">Why Reclassify Shakespeare?</h2>
+  <p>Our team is part of the content curation team at a global streaming service. The platform wants a new way to organize its library so that viewers can discover content through reference points like "Hamlet-type" or "Twelfth Night-type." This report is the first step: analyzing Shakespeare's 37 plays, grouping them into data-supported types, naming each after a representative work, and mapping each to the viewers it suits.</p>
+  <p>Shakespeare's plays have been sorted into three buckets for four centuries: comedies, tragedies, and histories. That taxonomy was built for the stage, not for recommendation. It is too coarse for the question a streaming platform faces daily: what should I recommend to this viewer, right now? "Tragedy" covers both the domestic suffocation of Othello and the political collapse of Julius Caesar. "Comedy" bundles the dark irony of Measure for Measure with the breezy warmth of As You Like It.</p>
+  <p>Genre labels describe what a work is, not what it feels like to watch. The viewing experience is shaped by two things above all: how the emotional register moves across the work, and how the characters are connected. Neither is captured by genre. This project classifies the 37 plays using only those two measurable dimensions.</p>
+  <div class="callout" style="border-left-color:var(--fall)"><strong>Research Question:</strong> If we set aside inherited genre labels entirely and classify Shakespeare's 37 plays using only measurable emotional trajectory and character network structure, what patterns emerge — and do those patterns serve streaming curation better than comedy / tragedy / history?</div>
 </div>
 
-<!-- METHODOLOGY -->
 <div id="methodology" class="section">
   <p class="section-label">02 — Methodology</p>
-  <h2 class="h2-fade">How the Types Were Derived</h2>
-  <p>The classification was built in four stages. Each stage involved deliberate analytical choices — described in detail below — that shaped what the data could and could not reveal.</p>
+  <h2 style="color:var(--fade)">How the Types Were Derived</h2>
 
   <h3>Stage 1 — Measuring Emotional Flow</h3>
-  <p>To quantify emotional trajectory, we used VADER (Valence Aware Dictionary and sEntiment Reasoner) sentiment scoring applied to the dialogue of all 37 plays. Every speech unit received a compound sentiment score ranging from −1 (maximally negative) to +1 (maximally positive). These scores were then averaged at the scene level and smoothed across the full play using LOWESS regression (bandwidth 200) to reveal the underlying arc rather than scene-by-scene noise.</p>
-
-  <div class="choice-box">
-    <div class="choice-q">Why scene-level, not act-level or word-level?</div>
-    <p>Word-level scoring would capture moment-to-moment fluctuations too granular to be meaningful for a viewer's overall experience — a single emotional line does not define how a scene feels. Act-level averaging, by contrast, collapses too much variation: a long act with violent swings in both directions would produce a mid-range average that misrepresents the actual experience of watching it. The scene is the natural dramatic unit — it is the level at which Shakespeare constructs emotional contrast and transition — making it the appropriate granule for this analysis. Five act-level means were then extracted from the scene data to compute the directional slope (Act 5 mean − Act 1 mean) that anchors the typology.</p>
-  </div>
-
-  <div class="choice-box">
-    <div class="choice-q">Why VADER, and why LOWESS smoothing?</div>
-    <p>VADER was designed for short, informal texts, which gives it sensitivity to valence-bearing word choices without requiring syntactic parsing — appropriate for verse dialogue that does not follow modern prose grammar. Its lexicon was not calibrated for Early Modern English, which is a known limitation (discussed in the Reflection section), but it remains the most widely validated general-purpose tool available for this kind of large-scale textual sentiment analysis. LOWESS smoothing was applied with a bandwidth of 200 to remove scene-to-scene noise while preserving the macro-level shape of the arc. A tighter bandwidth would over-fit to local variation; a wider one would erase meaningful mid-play shifts such as the valley in Break &amp; Mend plays or the peak in Too High to Fall plays.</p>
-  </div>
+  <p>We applied VADER sentiment scoring to the dialogue of all 37 plays. Every speech unit received a compound score from −1 to +1. Scores were averaged at the scene level and smoothed using LOWESS regression (bandwidth 200) to reveal the underlying arc.</p>
+  <div class="choice-box"><div class="cq">Why scene-level (not word- or act-level)?</div><p>Word-level scoring captures fluctuations too granular to reflect a viewer's experience. Act-level averaging collapses too much variation — a long act with swings in both directions produces a misleading mid-range average. The scene is the natural dramatic unit at which Shakespeare builds emotional contrast.</p></div>
+  <div class="choice-box"><div class="cq">Why VADER and LOWESS?</div><p>VADER reads valence-bearing word choices without requiring modern grammar — suitable for verse. LOWESS at bandwidth 200 removes scene-to-scene noise while preserving the macro arc. A tighter bandwidth over-fits to local noise; a wider one erases meaningful mid-play shifts such as the central valley in Henry V-type plays.</p></div>
 
   <h3>Stage 2 — Measuring Character Relationship Structure</h3>
-  <p>Character networks were constructed by treating shared scene appearances as edges, with edge weight proportional to the frequency of co-occurrence (weighted degree). The Leiden community detection algorithm was then applied to identify internally cohesive character groups within each play. Four network metrics were extracted for each play: Density, Q Modularity, number of Communities, and Average Edge Weight.</p>
+  <p>Networks were built from speech co-occurrence: characters sharing a scene form an edge, weighted by co-occurrence frequency. The Leiden algorithm detected communities. Four metrics were recorded: Density, Q Modularity, Communities, and Average Edge Weight.</p>
+  <div class="choice-box"><div class="cq">Why speech co-occurrence?</div><p>Direct address misses characters who share scenes without speaking directly; stage directions are inconsistent across editions. Co-occurrence within scenes is the most reliable structural signal of dramatic relationship.</p></div>
+  <div class="choice-box"><div class="cq">Why Leiden over Louvain?</div><p>Leiden guarantees internally connected communities, which Louvain does not. For dramatic analysis, where a community should mean a coherent group of characters, this matters.</p></div>
 
-  <div class="choice-box">
-    <div class="choice-q">Why speech co-occurrence rather than direct address or stage directions?</div>
-    <p>Direct address captures only explicit verbal interaction and misses the relational significance of characters who share scenes — witness scenes, group confrontations, ensemble moments — without necessarily speaking to each other. Stage directions are incomplete and inconsistently recorded across historical editions. Speech co-occurrence within scenes is the most consistently available and structurally meaningful signal: if two characters appear in the same scene, they exist in the same relational space, and the frequency of that co-existence is a reliable proxy for the strength of their narrative relationship. This approach is consistent with established methods in computational literary studies.</p>
-  </div>
+  <h3>Stage 3 — How the Number of Types Was Determined</h3>
+  <p>The six types were not chosen in advance. They emerged from the intersection of two axes — emotional arc shape and network structure — applied to all 37 plays. The first axis sorted plays by the geometric shape of their LOWESS-smoothed sentiment curve, producing five distinct forms: continuous descent, continuous rise, mid-play valley (down-then-up), mid-play arch (up-then-down), and flat plateau.</p>
+  <p>Within the descending-arc group, a critical sub-split appeared. Some plays cross into genuinely negative sentiment in their final acts (negative-entry status), while others descend only within positive territory and never become bleak. Because these two sub-groups produce fundamentally different viewing experiences — one bleak, one bittersweet — they were separated into two types. The presence or absence of negative entry, rather than density alone, is the decisive boundary between Macbeth-type and Much Ado-type plays.</p>
+  <p>This yields six types: two descending forms separated by negative entry (Macbeth-type, Much Ado-type), one rising (As You Like It-type), one valley (Henry V-type), one inverted-arch (Othello-type), and one flat plateau (Love's Labor's Lost-type). We considered whether fewer or more types would better capture the data; six was the configuration at which every type was defined by a coherent combination of emotional and network signatures while remaining small enough for practical curation use.</p>
 
-  <div class="choice-box">
-    <div class="choice-q">Why the Leiden algorithm for community detection?</div>
-    <p>Community detection identifies which characters cluster together into internally dense, externally sparse groups — the structural equivalent of "factions" or "social worlds" within the play. We chose the Leiden algorithm over the more commonly used Louvain method because Leiden provides stronger guarantees of community connectivity: it does not produce internally disconnected communities, which Louvain can. For dramatic network analysis where a "community" should represent a coherent group of characters with meaningful shared presence, this property is essential. The number of communities produced by Leiden proved to be one of the most discriminating variables in separating the six types.</p>
-  </div>
-
-  <h3>Stage 3 — Classification</h3>
-  <p>Plays were first sorted by emotional slope and negative-entry status (whether any act mean crossed below zero). This produced a primary ordering from which the broad directional types — ascending, descending, flat — were identifiable. Network profiles were then applied to distinguish types with similar slope values but different relational structures (particularly Warm &amp; Bitter vs. The Fall, and Words Over Action vs. Against the Odds). Each type was validated by checking that its members showed internal consistency across both dimensions before naming.</p>
-
-  <h3>Stage 4 — Curation Framing</h3>
-  <p>Each type was translated into a streaming audience profile and viewing context, grounded in the emotional and structural signature identified in stages 1–3. The profiles are intentionally practical — designed to map onto existing recommendation logic that streaming platforms already use to match viewers with content by mood, occasion, and intensity preference.</p>
-
+  <h3>Summary of Classification Variables</h3>
   <table class="criteria-table">
-    <thead>
-      <tr>
-        <th>Variable</th><th>Source</th><th>Role in Classification</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Variable</th><th>Source</th><th>Role</th></tr></thead>
     <tbody>
-      <tr><td>Slope</td><td>Act5 mean − Act1 VADER mean</td><td>Primary sort: rising vs. descending arc</td></tr>
-      <tr><td>Negative entry</td><td>Any act mean &lt; 0</td><td>Separates Descent from Fade; identifies true darkness</td></tr>
-      <tr><td>Arc shape</td><td>LOWESS curve visual pattern</td><td>Identifies V/U (Valley) and Peak (Arch) forms</td></tr>
+      <tr><td>Arc shape</td><td>LOWESS curve geometry</td><td>Primary split: descent / rise / valley / arch / flat</td></tr>
+      <tr><td>Slope</td><td>Act5 − Act1 VADER mean</td><td>Direction and steepness of the arc</td></tr>
+      <tr><td>Negative entry</td><td>Any act mean &lt; 0</td><td>Separates Macbeth-type (true descent) from Much Ado-type (cooling within positive range)</td></tr>
       <tr><td>Density</td><td>Edges ÷ possible edges</td><td>Tight ensemble vs. sparse world</td></tr>
-      <tr><td>Q Modularity</td><td>Leiden community separation</td><td>Unified vs. fragmented cast</td></tr>
+      <tr><td>Q Modularity</td><td>Leiden separation</td><td>Unified vs. fragmented cast</td></tr>
       <tr><td>Communities</td><td>Leiden cluster count</td><td>Number of independent character groups</td></tr>
-      <tr><td>Avg Edge Weight</td><td>Mean co-occurrence frequency</td><td>Depth of character interaction</td></tr>
+      <tr><td>Avg Edge Weight</td><td>Mean co-occurrence</td><td>Depth of character interaction</td></tr>
     </tbody>
   </table>
 </div>
 
-<!-- TYPE 1 -->
-<div id="type1" class="type-section">
+<div id="overview" class="section">
+  <p class="section-label">03 — The Six Types</p>
+  <h2>Six Types at a Glance</h2>
+  <p>The analysis produced six types, each named after its representative work. The table below summarizes all six; detailed profiles follow.</p>
+  <table class="overview-table">
+    <thead><tr><th>Type</th><th>Keyword Label</th><th>Defining Data Signature</th></tr></thead>
+    <tbody>
+      <tr><td><span class="type-dot" style="background:var(--fall)"></span><strong>Macbeth-type</strong></td><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--fall)">Slow Burn + Fractured Factions</td><td style="color:var(--muted)">Crosses into negative sentiment; sparse, faction-split network</td></tr>
+      <tr><td><span class="type-dot" style="background:var(--fade)"></span><strong>Much Ado-type</strong></td><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--fade)">Cooling Warmth + Tight Ensemble</td><td style="color:var(--muted)">Cools but stays positive; highest density and interaction weight</td></tr>
+      <tr><td><span class="type-dot" style="background:var(--rise)"></span><strong>As You Like It-type</strong></td><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--rise)">Slow Build + Scattered World</td><td style="color:var(--muted)">Rising arc; lowest density, most communities</td></tr>
+      <tr><td><span class="type-dot" style="background:var(--valley)"></span><strong>Henry V-type</strong></td><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--valley)">Mid-Act Valley + Resilient Core</td><td style="color:var(--muted)">Valley-shaped arc; mid density, relationships hold</td></tr>
+      <tr><td><span class="type-dot" style="background:var(--arch)"></span><strong>Othello-type</strong></td><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--arch)">Inverted Arch + Claustrophobic Closeness</td><td style="color:var(--muted)">Peak-then-fall arc; dense, tightly bound cast</td></tr>
+      <tr><td><span class="type-dot" style="background:var(--plateau)"></span><strong>Love's Labor's Lost-type</strong></td><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--plateau)">Sustained Tone + Light Network</td><td style="color:var(--muted)">Flat arc; wide reach, lowest interaction weight</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="macbeth" class="type-section">
   <div class="type-header">
     <div class="type-number" style="color:var(--fall)">①</div>
-    <div class="type-header-content">
-      <div class="type-badge" style="background:var(--fall-light);color:var(--fall);">Descent Type · 8 Plays</div>
-      <h2 style="color:var(--fall);">The Fall</h2>
-      <p class="type-tagline">양성 출발 → 음성 도달 · 작품 전반에 걸쳐 어둠이 축적된다</p>
-      <div class="type-tags">
-        <span class="tag" style="border-color:#c9a0a0;color:var(--fall);background:var(--fall-light);">Slow Burn</span>
-        <span class="tag" style="border-color:#c9a0a0;color:var(--fall);background:var(--fall-light);">Collapse</span>
-        <span class="tag" style="border-color:#c9a0a0;color:var(--fall);background:var(--fall-light);">Inevitable Darkness</span>
-      </div>
+    <div class="type-hc">
+      <div class="type-badge" style="background:var(--fall-light);color:var(--fall)">Macbeth · 8 plays</div>
+      <h2 style="color:var(--fall)">Macbeth-type</h2>
+      <div class="type-keyword" style="color:var(--fall)">Slow Burn + Fractured Factions</div>
+      <div class="type-tagline">Begins positive, descends into negative, ending below zero. Darkness accumulates across acts without recovery.</div>
     </div>
   </div>
 
-  <div class="rep-work">
-    <div class="rep-label">Representative Work</div>
-    <div class="rep-title">Macbeth</div>
-    <div class="rep-images">
-      <div class="rep-img-wrap"><div class="img-label">Sentiment Curve</div><img src="sentiment_macbeth.png" alt="Macbeth sentiment curve"></div>
-      <div class="rep-img-wrap"><div class="img-label">Character Network</div><img src="network_macbeth.png" alt="Macbeth network"></div>
-    </div>
-    <div class="metrics-row">
-      <div class="metric-cell"><span class="m-val" style="color:var(--fall)">−0.19</span><span class="m-lbl">Slope</span></div>
-      <div class="metric-cell"><span class="m-val">0.290</span><span class="m-lbl">Density</span></div>
-      <div class="metric-cell"><span class="m-val">0.355</span><span class="m-lbl">Q Modularity</span></div>
-      <div class="metric-cell"><span class="m-val">4</span><span class="m-lbl">Communities</span></div>
-      <div class="metric-cell"><span class="m-val">1.63</span><span class="m-lbl">Avg Weight</span></div>
-    </div>
-    <div class="network-note" style="border-left-color:var(--fall);">
-      <strong>Network Signature:</strong> Sparse structure (D=0.290) with moderate fragmentation — few but meaningful relationships organized into distinct factions. Characters interact deeply within groups but rarely across them. The structural sparseness makes betrayal and isolation feel architecturally inevitable rather than dramatically imposed.
-    </div>
+  <div class="rep-label">Representative Work — Macbeth</div>
+  <div class="rep-images">
+    <div class="rep-img-wrap"><div class="il">Sentiment Curve</div><img src="sentiment_macbeth.png" alt="Macbeth sentiment curve"></div>
+    <div class="rep-img-wrap"><div class="il">Character Network</div><img src="network_macbeth.png" alt="Macbeth network"></div>
+  </div>
+
+  <h3>Emotional Flow</h3>
+  <p>Begins in positive territory and descends progressively into negative values, ending below zero. The arc moves one direction — downward — without recovery. Darkness accumulates across acts rather than striking suddenly.</p>
+  <h3>Character Network</h3>
+  <p>Sparse structure (type avg Density 0.495) split into distinct factions with few cross-group ties. The thinness makes betrayal and isolation feel architecturally inevitable — relationships are too thin to absorb the weight the plot demands.</p>
+
+  <div class="metrics-row">
+    <div class="metric-cell"><span class="mv" style="color:var(--fall)">−0.19</span><span class="ml">Slope</span></div>
+    <div class="metric-cell"><span class="mv">0.290</span><span class="ml">Density</span></div>
+    <div class="metric-cell"><span class="mv">0.355</span><span class="ml">Q Modularity</span></div>
+    <div class="metric-cell"><span class="mv">4</span><span class="ml">Communities</span></div>
+    <div class="metric-cell"><span class="mv">1.63</span><span class="ml">Avg Weight</span></div>
   </div>
 
   <div class="audience-box">
-    <div><h4>Target Audience</h4><p>Viewers who want to feel the weight of catastrophe building — those who seek immersive, emotionally demanding storytelling that leaves something behind. Fans of prestige TV drama.</p></div>
-    <div><h4>Viewing Context</h4><p>Late evening, full attention. Pairs with dark drama series. Best approached when the viewer is prepared to be emotionally spent.</p></div>
+    <h4>Target Viewers and Viewing Situations</h4>
+    <p>Because this type pairs a downward emotional curve with a sparse, faction-split network, it suits viewers drawn to betrayal, mounting dread, and the collapse of relationships — those who want to feel catastrophe build and are comfortable with bleak endings. Late-evening, full-attention viewing.</p>
+    <span class="streaming-badge" style="background:var(--fall-light);color:var(--fall)">Streaming-front example: "The Downward Spiral — Slow-Burning Tragedy"</span>
   </div>
 
-  <div class="plays-section-label">All Plays in This Type</div>
-  <div class="play-grid">
-    <div class="play-card"><div class="play-card-head"><h4>Romeo and Juliet</h4><span class="slope-badge">−0.23</span></div><div class="play-card-images"><img src="sentiment_romeo-and-juliet.png" alt=""><img src="network_romeo-and-juliet.png" alt=""></div><div class="play-card-meta"><span>D 0.581</span><span>Q 0.213</span><span>C 3</span><span>W 2.23</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Titus Andronicus</h4><span class="slope-badge">−0.24</span></div><div class="play-card-images"><img src="sentiment_titus-andronicus.png" alt=""><img src="network_titus-andronicus.png" alt=""></div><div class="play-card-meta"><span>D 0.647</span><span>Q 0.156</span><span>C 3</span><span>W 1.85</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Timon of Athens</h4><span class="slope-badge">−0.16</span></div><div class="play-card-images"><img src="sentiment_timon-of-athens.png" alt=""><img src="network_timon-of-athens.png" alt=""></div><div class="play-card-meta"><span>D 0.682</span><span>Q 0.400</span><span>C 6</span><span>W 1.38</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Troilus and Cressida</h4><span class="slope-badge">−0.16</span></div><div class="play-card-images"><img src="sentiment_troilus-and-cressida.png" alt=""><img src="network_troilus-and-cressida.png" alt=""></div><div class="play-card-meta"><span>D 0.402</span><span>Q 0.231</span><span>C 2</span><span>W 2.52</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Cymbeline</h4><span class="slope-badge">−0.07</span></div><div class="play-card-images"><img src="sentiment_cymbeline.png" alt=""><img src="network_cymbeline.png" alt=""></div><div class="play-card-meta"><span>D 0.446</span><span>Q 0.396</span><span>C 4</span><span>W 1.73</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Julius Caesar</h4><span class="slope-badge">−0.05</span></div><div class="play-card-images"><img src="sentiment_julius-caesar.png" alt=""><img src="network_julius-caesar.png" alt=""></div><div class="play-card-meta"><span>D 0.409</span><span>Q 0.338</span><span>C 4</span><span>W 1.57</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Hamlet</h4><span class="slope-badge">−0.04</span></div><div class="play-card-images"><img src="sentiment_hamlet.png" alt=""><img src="network_hamlet.png" alt=""></div><div class="play-card-meta"><span>D 0.505</span><span>Q 0.238</span><span>C 3</span><span>W 2.11</span></div></div>
+  <div class="plays-label">All 8 Plays in This Type</div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Macbeth</h4><span class="sb">slope −0.19</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_macbeth.png" alt="Macbeth sentiment">
+        <img src="network_macbeth.png" alt="Macbeth network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A general murders his king to seize the throne, then unravels under guilt and paranoia.</div>
+        <div class="why">Textbook descent: positive opening collapses into negative; sparse network (D=0.290) isolates Macbeth as his alliances fracture.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.290</span><span>Q 0.355</span><span>C 4</span><span>W 1.63</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Romeo and Juliet</h4><span class="sb">slope −0.23</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_romeo-and-juliet.png" alt="Romeo and Juliet sentiment">
+        <img src="network_romeo-and-juliet.png" alt="Romeo and Juliet network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Two young lovers from feuding families fall in love and die.</div>
+        <div class="why">Steepest slope in the type (−0.23). Warm opening curdles into tragedy; tight household clusters split along the feud line.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.581</span><span>Q 0.213</span><span>C 3</span><span>W 2.23</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Titus Andronicus</h4><span class="sb">slope −0.24</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_titus-andronicus.png" alt="Titus Andronicus sentiment">
+        <img src="network_titus-andronicus.png" alt="Titus Andronicus network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A Roman general and his enemies spiral into mutual revenge and atrocity.</div>
+        <div class="why">Continuous descent into the corpus's darkest register; fragmented revenge factions.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.647</span><span>Q 0.156</span><span>C 3</span><span>W 1.85</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Timon of Athens</h4><span class="sb">slope −0.16</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_timon-of-athens.png" alt="Timon of Athens sentiment">
+        <img src="network_timon-of-athens.png" alt="Timon of Athens network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A generous nobleman is abandoned by friends and dies a misanthrope.</div>
+        <div class="why">Sharp downward arc; high community count (6) captures the social abandonment that drives the fall.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.682</span><span>Q 0.400</span><span>C 6</span><span>W 1.38</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Troilus and Cressida</h4><span class="sb">slope −0.16</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_troilus-and-cressida.png" alt="Troilus and Cressida sentiment">
+        <img src="network_troilus-and-cressida.png" alt="Troilus and Cressida network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Love and honour collapse amid the stalemate of the Trojan War.</div>
+        <div class="why">Bitter descent; only two communities but cynicism pervades both Greek and Trojan camps.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.402</span><span>Q 0.231</span><span>C 2</span><span>W 2.52</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Cymbeline</h4><span class="sb">slope −0.07</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_cymbeline.png" alt="Cymbeline sentiment">
+        <img src="network_cymbeline.png" alt="Cymbeline network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Mistaken jealousy and exile threaten a marriage before a late reconciliation.</div>
+        <div class="why">Net negative entry places it here despite romance elements; fragmented (Q=0.396) court-and-exile worlds.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.446</span><span>Q 0.396</span><span>C 4</span><span>W 1.73</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Julius Caesar</h4><span class="sb">slope −0.05</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_julius-caesar.png" alt="Julius Caesar sentiment">
+        <img src="network_julius-caesar.png" alt="Julius Caesar network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Conspirators assassinate Caesar; civil war consumes them.</div>
+        <div class="why">Gentle but steady descent; factional network (conspirators vs. loyalists) mirrors the political fracture.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.409</span><span>Q 0.338</span><span>C 4</span><span>W 1.57</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Hamlet</h4><span class="sb">slope −0.04</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_hamlet.png" alt="Hamlet sentiment">
+        <img src="network_hamlet.png" alt="Hamlet network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A prince feigns madness to avenge his murdered father; nearly everyone dies.</div>
+        <div class="why">Slope just negative; brooding arc never recovers. Three communities capture the court, the family, and the outsiders.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.505</span><span>Q 0.238</span><span>C 3</span><span>W 2.11</span></div>
   </div>
 </div>
 
-<!-- TYPE 2 -->
-<div id="type2" class="type-section">
+<div id="much-ado" class="type-section">
   <div class="type-header">
     <div class="type-number" style="color:var(--fade)">②</div>
-    <div class="type-header-content">
-      <div class="type-badge" style="background:var(--fade-light);color:var(--fade);">Fade Type · 7 Plays</div>
-      <h2 style="color:var(--fade);">Warm &amp; Bitter</h2>
-      <p class="type-tagline">높은 양성 출발 → 하강 → 음성 미진입 · 온기가 식지만 꺾이지는 않는다</p>
-      <div class="type-tags">
-        <span class="tag" style="border-color:#a9a4e0;color:var(--fade);background:var(--fade-light);">Cooling Warmth</span>
-        <span class="tag" style="border-color:#a9a4e0;color:var(--fade);background:var(--fade-light);">Ensemble</span>
-        <span class="tag" style="border-color:#a9a4e0;color:var(--fade);background:var(--fade-light);">Bittersweet</span>
-      </div>
+    <div class="type-hc">
+      <div class="type-badge" style="background:var(--fade-light);color:var(--fade)">Much Ado About Nothing · 7 plays</div>
+      <h2 style="color:var(--fade)">Much Ado-type</h2>
+      <div class="type-keyword" style="color:var(--fade)">Cooling Warmth + Tight Ensemble</div>
+      <div class="type-tagline">Begins high and positive, cools across acts, but never enters negative territory. Warmth fades without collapsing.</div>
     </div>
   </div>
 
-  <div class="rep-work">
-    <div class="rep-label">Representative Work</div>
-    <div class="rep-title">Much Ado About Nothing</div>
-    <div class="rep-images">
-      <div class="rep-img-wrap"><div class="img-label">Sentiment Curve</div><img src="sentiment_much-ado-about-nothing.png" alt=""></div>
-      <div class="rep-img-wrap"><div class="img-label">Character Network</div><img src="network_much-ado-about-nothing.png" alt=""></div>
-    </div>
-    <div class="metrics-row">
-      <div class="metric-cell"><span class="m-val" style="color:var(--fade)">−0.15</span><span class="m-lbl">Slope</span></div>
-      <div class="metric-cell"><span class="m-val">0.661</span><span class="m-lbl">Density ★</span></div>
-      <div class="metric-cell"><span class="m-val">0.222</span><span class="m-lbl">Q Modularity</span></div>
-      <div class="metric-cell"><span class="m-val">3</span><span class="m-lbl">Communities</span></div>
-      <div class="metric-cell"><span class="m-val">2.27</span><span class="m-lbl">Avg Weight ★</span></div>
-    </div>
-    <div class="network-note" style="border-left-color:var(--fade);">
-      <strong>Network Signature — Type Highest Density (avg 0.585) &amp; Avg Weight (avg 2.22):</strong> The most tightly connected, frequently interacting casts in the corpus. Characters share rich, dense relationships — the warmth is structurally real, not just tonal. The cooling emotional arc runs against a network that refuses to collapse.
-    </div>
+  <div class="rep-label">Representative Work — Much Ado About Nothing</div>
+  <div class="rep-images">
+    <div class="rep-img-wrap"><div class="il">Sentiment Curve</div><img src="sentiment_much-ado-about-nothing.png" alt="Much Ado About Nothing sentiment curve"></div>
+    <div class="rep-img-wrap"><div class="il">Character Network</div><img src="network_much-ado-about-nothing.png" alt="Much Ado About Nothing network"></div>
+  </div>
+
+  <h3>Emotional Flow</h3>
+  <p>Begins high on the positive register and descends across acts — but never enters negative territory. The warmth cools without collapsing; the resolution carries a slight sting rather than full triumph.</p>
+  <h3>Character Network</h3>
+  <p>The highest average density (0.585) and interaction weight (2.22) in the corpus. Characters are tightly bound and interact constantly — a unified cast with few internal boundaries. The warmth is structurally real; the network refuses to fall apart even as the mood cools.</p>
+
+  <div class="metrics-row">
+    <div class="metric-cell"><span class="mv" style="color:var(--fade)">−0.15</span><span class="ml">Slope</span></div>
+    <div class="metric-cell"><span class="mv">0.661</span><span class="ml">Density</span></div>
+    <div class="metric-cell"><span class="mv">0.222</span><span class="ml">Q Modularity</span></div>
+    <div class="metric-cell"><span class="mv">3</span><span class="ml">Communities</span></div>
+    <div class="metric-cell"><span class="mv">2.27</span><span class="ml">Avg Weight</span></div>
   </div>
 
   <div class="audience-box">
-    <div><h4>Target Audience</h4><p>Viewers who appreciate warmth with an edge — ensemble casts, sharp wit, and the slight sting of imperfect resolution. Those who don't need a neat happy ending to feel satisfied.</p></div>
-    <div><h4>Viewing Context</h4><p>Sunday afternoon or early evening. Pairs with ensemble dramas and sharp romantic comedies. Gentle enough to be relaxing rather than draining.</p></div>
+    <h4>Target Viewers and Viewing Situations</h4>
+    <p>Because this type combines a gently cooling (but never bleak) curve with the densest, warmest relationship networks, it suits viewers who enjoy ensemble warmth and sharp wit but don't need a flawless happy ending. Sunday-afternoon, relaxed viewing.</p>
+    <span class="streaming-badge" style="background:var(--fade-light);color:var(--fade)">Streaming-front example: "Warm &amp; Witty — Bittersweet Ensembles"</span>
   </div>
 
-  <div class="plays-section-label">All Plays in This Type</div>
-  <div class="play-grid">
-    <div class="play-card"><div class="play-card-head"><h4>Twelfth Night</h4><span class="slope-badge">−0.08</span></div><div class="play-card-images"><img src="sentiment_twelfth-night.png" alt=""><img src="network_twelfth-night.png" alt=""></div><div class="play-card-meta"><span>D 0.821</span><span>Q 0.021</span><span>C 3</span><span>W 2.53</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>The Merry Wives of Windsor</h4><span class="slope-badge">−0.09</span></div><div class="play-card-images"><img src="sentiment_the-merry-wives-of-windsor.png" alt=""><img src="network_the-merry-wives-of-windsor.png" alt=""></div><div class="play-card-meta"><span>D 0.736</span><span>Q 0.049</span><span>C 3</span><span>W 2.42</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>The Taming of the Shrew</h4><span class="slope-badge">−0.11</span></div><div class="play-card-images"><img src="sentiment_the-taming-of-the-shrew.png" alt=""><img src="network_the-taming-of-the-shrew.png" alt=""></div><div class="play-card-meta"><span>D 0.691</span><span>Q 0.402</span><span>C 3</span><span>W 2.86</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Measure for Measure</h4><span class="slope-badge">−0.11</span></div><div class="play-card-images"><img src="sentiment_measure-for-measure.png" alt=""><img src="network_measure-for-measure.png" alt=""></div><div class="play-card-meta"><span>D 0.391</span><span>Q 0.170</span><span>C 3</span><span>W 1.63</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>The Two Gentlemen of Verona</h4><span class="slope-badge">−0.03</span></div><div class="play-card-images"><img src="sentiment_the-two-gentlemen-of-verona.png" alt=""><img src="network_the-two-gentlemen-of-verona.png" alt=""></div><div class="play-card-meta"><span>D 0.508</span><span>Q 0.036</span><span>C 3</span><span>W 1.97</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Antony and Cleopatra ✦</h4><span class="slope-badge">+0.02</span></div><div class="play-card-images"><img src="sentiment_antony-and-cleopatra.png" alt=""><img src="network_antony-and-cleopatra.png" alt=""></div><div class="play-card-meta"><span>D 0.287</span><span>Q 0.364</span><span>C 8</span><span>W 1.85</span></div></div>
+  <div class="plays-label">All 7 Plays in This Type</div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Much Ado About Nothing</h4><span class="sb">slope −0.15</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_much-ado-about-nothing.png" alt="Much Ado About Nothing sentiment">
+        <img src="network_much-ado-about-nothing.png" alt="Much Ado About Nothing network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Two couples are tricked into and out of love before a double wedding.</div>
+        <div class="why">Warm arc that dips with the slander plot but stays positive; one of the densest casts (D=0.661) with constant cross-talk.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.661</span><span>Q 0.222</span><span>C 3</span><span>W 2.27</span></div>
   </div>
-  <p style="font-size:12px;color:var(--muted);margin-top:12px;">✦ Boundary case: network unusually fragmented (C=8). Classified here based on all-positive sentiment range.</p>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Twelfth Night</h4><span class="sb">slope −0.08</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_twelfth-night.png" alt="Twelfth Night sentiment">
+        <img src="network_twelfth-night.png" alt="Twelfth Night network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Shipwreck, disguise, and mistaken identity tangle a love triangle.</div>
+        <div class="why">Highest density in the type (0.821); the tight ensemble cools gently from festive to wistful.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.821</span><span>Q 0.021</span><span>C 3</span><span>W 2.53</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>The Merry Wives of Windsor</h4><span class="sb">slope −0.09</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_the-merry-wives-of-windsor.png" alt="The Merry Wives of Windsor sentiment">
+        <img src="network_the-merry-wives-of-windsor.png" alt="The Merry Wives of Windsor network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Two wives outwit the boastful Falstaff.</div>
+        <div class="why">Dense, gossipy community network (D=0.736); comedic warmth softens without ever darkening.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.736</span><span>Q 0.049</span><span>C 3</span><span>W 2.42</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>The Taming of the Shrew</h4><span class="sb">slope −0.11</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_the-taming-of-the-shrew.png" alt="The Taming of the Shrew sentiment">
+        <img src="network_the-taming-of-the-shrew.png" alt="The Taming of the Shrew network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A volatile courtship ends in an uneasy marriage.</div>
+        <div class="why">Highest interaction weight in the corpus (2.86); warm-but-bitter aftertaste fits the cooling arc.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.691</span><span>Q 0.402</span><span>C 3</span><span>W 2.86</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Measure for Measure</h4><span class="sb">slope −0.11</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_measure-for-measure.png" alt="Measure for Measure sentiment">
+        <img src="network_measure-for-measure.png" alt="Measure for Measure network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A duke tests his deputy, exposing hypocrisy around mercy and law.</div>
+        <div class="why">A "problem comedy" — positive range but morally uneasy; cooling arc captures its ambivalence.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.391</span><span>Q 0.170</span><span>C 3</span><span>W 1.63</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>The Two Gentlemen of Verona</h4><span class="sb">slope −0.03</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_the-two-gentlemen-of-verona.png" alt="The Two Gentlemen of Verona sentiment">
+        <img src="network_the-two-gentlemen-of-verona.png" alt="The Two Gentlemen of Verona network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Friendship and love collide as two friends pursue the same woman.</div>
+        <div class="why">Light, near-flat positive arc; unified cast (Q=0.036) with little fragmentation.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.508</span><span>Q 0.036</span><span>C 3</span><span>W 1.97</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Antony and Cleopatra</h4><span class="sb">slope +0.02</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_antony-and-cleopatra.png" alt="Antony and Cleopatra sentiment">
+        <img src="network_antony-and-cleopatra.png" alt="Antony and Cleopatra network">
+      </div>
+      <div class="play-text">
+        <div class="syn">The Roman general and Egyptian queen choose love over empire and fall.</div>
+        <div class="why">Boundary case — see note below.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.287</span><span>Q 0.364</span><span>C 8</span><span>W 1.85</span></div>
+  </div>
+  <div class="boundary-note"><strong>✦ Boundary case.</strong> Antony and Cleopatra is a boundary case. Its slope is technically positive (+0.02) and its network is unusually fragmented (8 communities), neither of which match this type's typical signature. We classified it here on a stricter emotional criterion: although the slope is slightly positive, the play's overall sentiment stays within the cooling positive-to-neutral band that defines Much Ado-type — it never rises in the sustained way that defines As You Like It-type, and never enters Macbeth-type darkness. The fragmented network reflects its sprawling geography (Rome vs. Egypt) rather than a fundamentally different emotional shape. Our classification rule in such cases: emotional range and arc shape take priority over network anomalies.</div>
 </div>
 
-<!-- TYPE 3 -->
-<div id="type3" class="type-section">
+<div id="as-you-like-it" class="type-section">
   <div class="type-header">
     <div class="type-number" style="color:var(--rise)">③</div>
-    <div class="type-header-content">
-      <div class="type-badge" style="background:var(--rise-light);color:var(--rise);">Rise Type · 8 Plays</div>
-      <h2 style="color:var(--rise);">Against the Odds</h2>
-      <p class="type-tagline">낮은/음성 출발 → 끝까지 상승 · 어둠 속에서 희망이 축적된다</p>
-      <div class="type-tags">
-        <span class="tag" style="border-color:#80c9b0;color:var(--rise);background:var(--rise-light);">Slow Build</span>
-        <span class="tag" style="border-color:#80c9b0;color:var(--rise);background:var(--rise-light);">Ascent</span>
-        <span class="tag" style="border-color:#80c9b0;color:var(--rise);background:var(--rise-light);">Recovery</span>
-      </div>
+    <div class="type-hc">
+      <div class="type-badge" style="background:var(--rise-light);color:var(--rise)">As You Like It · 8 plays</div>
+      <h2 style="color:var(--rise)">As You Like It-type</h2>
+      <div class="type-keyword" style="color:var(--rise)">Slow Build + Scattered World</div>
+      <div class="type-tagline">Begins low or negative and ascends continuously to the final act. The work moves away from darkness.</div>
     </div>
   </div>
 
-  <div class="rep-work">
-    <div class="rep-label">Representative Work</div>
-    <div class="rep-title">As You Like It</div>
-    <div class="rep-images">
-      <div class="rep-img-wrap"><div class="img-label">Sentiment Curve</div><img src="sentiment_as-you-like-it.png" alt=""></div>
-      <div class="rep-img-wrap"><div class="img-label">Character Network</div><img src="network_as-you-like-it.png" alt=""></div>
-    </div>
-    <div class="metrics-row">
-      <div class="metric-cell"><span class="m-val" style="color:var(--rise)">+0.10</span><span class="m-lbl">Slope</span></div>
-      <div class="metric-cell"><span class="m-val">0.474</span><span class="m-lbl">Density</span></div>
-      <div class="metric-cell"><span class="m-val">0.253</span><span class="m-lbl">Q Modularity</span></div>
-      <div class="metric-cell"><span class="m-val">4</span><span class="m-lbl">Communities</span></div>
-      <div class="metric-cell"><span class="m-val">1.72</span><span class="m-lbl">Avg Weight</span></div>
-    </div>
-    <div class="network-note" style="border-left-color:var(--rise);">
-      <strong>Network Signature — Type Lowest Density (avg 0.368) &amp; Most Communities (avg 4.4):</strong> Most structurally dispersed type — multiple independent groups operating in parallel across a wide world. The fragmentation mirrors the expanding, accumulating sense of possibility that the rising arc embodies.
-    </div>
+  <div class="rep-label">Representative Work — As You Like It</div>
+  <div class="rep-images">
+    <div class="rep-img-wrap"><div class="il">Sentiment Curve</div><img src="sentiment_as-you-like-it.png" alt="As You Like It sentiment curve"></div>
+    <div class="rep-img-wrap"><div class="il">Character Network</div><img src="network_as-you-like-it.png" alt="As You Like It network"></div>
+  </div>
+
+  <h3>Emotional Flow</h3>
+  <p>Begins low or negative and ascends continuously to the final act. The work moves away from darkness, accumulating hope and resolution. The ending sits higher than the start.</p>
+  <h3>Character Network</h3>
+  <p>Lowest average density (0.368) and most communities (avg 4.4) in the corpus. Multiple independent groups operate across a wide world. The dispersion mirrors the narrative logic: scattered arcs that gradually converge as the emotional register rises.</p>
+
+  <div class="metrics-row">
+    <div class="metric-cell"><span class="mv" style="color:var(--rise)">+0.10</span><span class="ml">Slope</span></div>
+    <div class="metric-cell"><span class="mv">0.474</span><span class="ml">Density</span></div>
+    <div class="metric-cell"><span class="mv">0.253</span><span class="ml">Q Modularity</span></div>
+    <div class="metric-cell"><span class="mv">4</span><span class="ml">Communities</span></div>
+    <div class="metric-cell"><span class="mv">1.72</span><span class="ml">Avg Weight</span></div>
   </div>
 
   <div class="audience-box">
-    <div><h4>Target Audience</h4><p>Viewers who want to feel momentum building — stories of growth, recovery, and redemption across distance. Good for when motivation or perspective is needed.</p></div>
-    <div><h4>Viewing Context</h4><p>Morning or weekend. Works as a palate cleanser after heavier content. The emotional upswing makes for a satisfying, energizing experience.</p></div>
+    <h4>Target Viewers and Viewing Situations</h4>
+    <p>Because this type pairs a rising curve with a dispersed, multi-group network, it suits viewers who want momentum and redemption across a broad canvas — stories of growth and recovery. Good for morning or weekend viewing, or as a palate cleanser after heavier content.</p>
+    <span class="streaming-badge" style="background:var(--rise-light);color:var(--rise)">Streaming-front example: "Against the Odds — Journeys of Renewal"</span>
   </div>
 
-  <div class="plays-section-label">All Plays in This Type</div>
-  <div class="play-grid">
-    <div class="play-card"><div class="play-card-head"><h4>The Tempest ✦</h4><span class="slope-badge">+0.08</span></div><div class="play-card-images"><img src="sentiment_the-tempest.png" alt=""><img src="network_the-tempest.png" alt=""></div><div class="play-card-meta"><span>D 0.706</span><span>Q 0.149</span><span>C 2</span><span>W 1.82</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Pericles</h4><span class="slope-badge">+0.11</span></div><div class="play-card-images"><img src="sentiment_pericles.png" alt=""><img src="network_pericles.png" alt=""></div><div class="play-card-meta"><span>D 0.166</span><span>Q 0.544</span><span>C 7</span><span>W 1.26</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>The Winter's Tale</h4><span class="slope-badge">+0.05</span></div><div class="play-card-images"><img src="sentiment_the-winters-tale.png" alt=""><img src="network_the-winters-tale.png" alt=""></div><div class="play-card-meta"><span>D 0.432</span><span>Q 0.342</span><span>C 3</span><span>W 1.43</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Henry IV, Part 2</h4><span class="slope-badge">+0.18</span></div><div class="play-card-images"><img src="sentiment_henry-iv-part-2.png" alt=""><img src="network_henry-iv-part-2.png" alt=""></div><div class="play-card-meta"><span>D 0.248</span><span>Q 0.412</span><span>C 5</span><span>W 1.35</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Henry VI, Part 1</h4><span class="slope-badge">+0.21</span></div><div class="play-card-images"><img src="sentiment_henry-vi-part-1.png" alt=""><img src="network_henry-vi-part-1.png" alt=""></div><div class="play-card-meta"><span>D 0.276</span><span>Q 0.395</span><span>C 4</span><span>W 1.84</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Henry VI, Part 3</h4><span class="slope-badge">+0.07</span></div><div class="play-card-images"><img src="sentiment_henry-vi-part-3.png" alt=""><img src="network_henry-vi-part-3.png" alt=""></div><div class="play-card-meta"><span>D 0.318</span><span>Q 0.274</span><span>C 4</span><span>W 2.10</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Coriolanus</h4><span class="slope-badge">+0.02</span></div><div class="play-card-images"><img src="sentiment_coriolanus.png" alt=""><img src="network_coriolanus.png" alt=""></div><div class="play-card-meta"><span>D 0.327</span><span>Q 0.410</span><span>C 6</span><span>W 2.08</span></div></div>
+  <div class="plays-label">All 8 Plays in This Type</div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>As You Like It</h4><span class="sb">slope +0.10</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_as-you-like-it.png" alt="As You Like It sentiment">
+        <img src="network_as-you-like-it.png" alt="As You Like It network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Exiles find love and renewal in the Forest of Arden.</div>
+        <div class="why">Clear upward arc; scattered forest-and-court groups (4 communities) converge in the joyful finale.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.474</span><span>Q 0.253</span><span>C 4</span><span>W 1.72</span></div>
   </div>
-  <p style="font-size:12px;color:var(--muted);margin-top:12px;">✦ The Tempest: boundary case — unusually dense (D=0.706, C=2). Classified here based on strong upward trajectory.</p>
+  <div class="play-card">
+    <div class="play-card-head"><h4>The Tempest</h4><span class="sb">slope +0.08</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_the-tempest.png" alt="The Tempest sentiment">
+        <img src="network_the-tempest.png" alt="The Tempest network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A magician orchestrates a storm to reconcile old enemies.</div>
+        <div class="why">Boundary case — see note below.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.706</span><span>Q 0.149</span><span>C 2</span><span>W 1.82</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Pericles</h4><span class="sb">slope +0.11</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_pericles.png" alt="Pericles sentiment">
+        <img src="network_pericles.png" alt="Pericles network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A prince endures shipwreck and loss before reuniting with his family.</div>
+        <div class="why">Strong rise (+0.11); the most dispersed network in the corpus (7 communities) traces his scattered voyages.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.166</span><span>Q 0.544</span><span>C 7</span><span>W 1.26</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>The Winter's Tale</h4><span class="sb">slope +0.05</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_the-winters-tale.png" alt="The Winter's Tale sentiment">
+        <img src="network_the-winters-tale.png" alt="The Winter's Tale network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Jealousy destroys a family that is restored sixteen years later.</div>
+        <div class="why">Famous two-half structure: darkness then renewal; the rising arc captures the redemptive second half.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.432</span><span>Q 0.342</span><span>C 3</span><span>W 1.43</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Henry IV, Part 2</h4><span class="sb">slope +0.18</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_henry-iv-part-2.png" alt="Henry IV, Part 2 sentiment">
+        <img src="network_henry-iv-part-2.png" alt="Henry IV, Part 2 network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Prince Hal matures and ascends to the throne as Falstaff fades.</div>
+        <div class="why">Steep rise (+0.18) as Hal grows into kingship; many loosely linked political factions.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.248</span><span>Q 0.412</span><span>C 5</span><span>W 1.35</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Henry VI, Part 1</h4><span class="sb">slope +0.21</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_henry-vi-part-1.png" alt="Henry VI, Part 1 sentiment">
+        <img src="network_henry-vi-part-1.png" alt="Henry VI, Part 1 network">
+      </div>
+      <div class="play-text">
+        <div class="syn">England's fortunes in France amid the start of dynastic conflict.</div>
+        <div class="why">Steepest rise in the type (+0.21); sprawling, fragmented network of nobles and soldiers.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.276</span><span>Q 0.395</span><span>C 4</span><span>W 1.84</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Henry VI, Part 3</h4><span class="sb">slope +0.07</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_henry-vi-part-3.png" alt="Henry VI, Part 3 sentiment">
+        <img src="network_henry-vi-part-3.png" alt="Henry VI, Part 3 network">
+      </div>
+      <div class="play-text">
+        <div class="syn">The Wars of the Roses reach their height.</div>
+        <div class="why">Upward arc (+0.07); one piece of the trilogy's larger descent-and-recovery shape discussed in the Conclusion.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.318</span><span>Q 0.274</span><span>C 4</span><span>W 2.10</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Coriolanus</h4><span class="sb">slope +0.02</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_coriolanus.png" alt="Coriolanus sentiment">
+        <img src="network_coriolanus.png" alt="Coriolanus network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A war hero is exiled by the people he served, then turns on Rome.</div>
+        <div class="why">Slight positive slope (+0.02) but classified on arc shape: moves from violent confrontation toward tragic recognition across a highly fragmented (6 communities) political world.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.327</span><span>Q 0.410</span><span>C 6</span><span>W 2.08</span></div>
+  </div>
+  <div class="boundary-note"><strong>✦ Boundary case.</strong> The Tempest is a boundary case. Its network is unusually dense (D=0.706) for this type, since the action is confined to one island. Following our classification rule, the strong, unbroken upward emotional trajectory across the whole play — from storm and grievance to reconciliation and freedom — takes priority over the network anomaly. The dense network reflects the single setting, not a different emotional shape.</div>
 </div>
 
-<!-- TYPE 4 -->
-<div id="type4" class="type-section">
+<div id="henry-v" class="type-section">
   <div class="type-header">
     <div class="type-number" style="color:var(--valley)">④</div>
-    <div class="type-header-content">
-      <div class="type-badge" style="background:var(--valley-light);color:var(--valley);">Valley Type · 7 Plays</div>
-      <h2 style="color:var(--valley);">Break &amp; Mend</h2>
-      <p class="type-tagline">중반 저점 후 회복 · 위기를 통과해야만 도달할 수 있는 해소</p>
-      <div class="type-tags">
-        <span class="tag" style="border-color:#8ab5d4;color:var(--valley);background:var(--valley-light);">Crisis</span>
-        <span class="tag" style="border-color:#8ab5d4;color:var(--valley);background:var(--valley-light);">Recovery</span>
-        <span class="tag" style="border-color:#8ab5d4;color:var(--valley);background:var(--valley-light);">Catharsis</span>
-      </div>
+    <div class="type-hc">
+      <div class="type-badge" style="background:var(--valley-light);color:var(--valley)">Henry V · 7 plays</div>
+      <h2 style="color:var(--valley)">Henry V-type</h2>
+      <div class="type-keyword" style="color:var(--valley)">Mid-Act Valley + Resilient Core</div>
+      <div class="type-tagline">Dips to a low point in the middle acts, then recovers toward the end — a valley shape.</div>
     </div>
   </div>
 
-  <div class="rep-work">
-    <div class="rep-label">Representative Work</div>
-    <div class="rep-title">Henry V</div>
-    <div class="rep-images">
-      <div class="rep-img-wrap"><div class="img-label">Sentiment Curve</div><img src="sentiment_henry-v.png" alt=""></div>
-      <div class="rep-img-wrap"><div class="img-label">Character Network</div><img src="network_henry-v.png" alt=""></div>
-    </div>
-    <div class="metrics-row">
-      <div class="metric-cell"><span class="m-val" style="color:var(--valley)">+0.04</span><span class="m-lbl">Slope</span></div>
-      <div class="metric-cell"><span class="m-val">0.222</span><span class="m-lbl">Density</span></div>
-      <div class="metric-cell"><span class="m-val">0.453</span><span class="m-lbl">Q Modularity</span></div>
-      <div class="metric-cell"><span class="m-val">4</span><span class="m-lbl">Communities</span></div>
-      <div class="metric-cell"><span class="m-val">1.57</span><span class="m-lbl">Avg Weight</span></div>
-    </div>
-    <div class="network-note" style="border-left-color:var(--valley);">
-      <strong>Network Signature:</strong> Mid-range density with meaningful interaction weight — characters matter to each other even as the emotional register dips. The V-shape arc maps onto a narrative structure where the central crisis forges rather than severs relationships.
-    </div>
+  <div class="rep-label">Representative Work — Henry V</div>
+  <div class="rep-images">
+    <div class="rep-img-wrap"><div class="il">Sentiment Curve</div><img src="sentiment_henry-v.png" alt="Henry V sentiment curve"></div>
+    <div class="rep-img-wrap"><div class="il">Character Network</div><img src="network_henry-v.png" alt="Henry V network"></div>
+  </div>
+
+  <h3>Emotional Flow</h3>
+  <p>Dips to a low point in the middle acts, then recovers toward the end — a valley shape. The viewing experience carries the weight of a crisis and the release of its resolution.</p>
+  <h3>Character Network</h3>
+  <p>Mid-range density with meaningful interaction weight — the relationships hold together through the valley. The crisis forges rather than severs the central bonds, leaving a resilient core.</p>
+
+  <div class="metrics-row">
+    <div class="metric-cell"><span class="mv" style="color:var(--valley)">+0.04</span><span class="ml">Slope</span></div>
+    <div class="metric-cell"><span class="mv">0.222</span><span class="ml">Density</span></div>
+    <div class="metric-cell"><span class="mv">0.453</span><span class="ml">Q Modularity</span></div>
+    <div class="metric-cell"><span class="mv">4</span><span class="ml">Communities</span></div>
+    <div class="metric-cell"><span class="mv">1.57</span><span class="ml">Avg Weight</span></div>
   </div>
 
   <div class="audience-box">
-    <div><h4>Target Audience</h4><p>Viewers who find tension satisfying when it resolves — those who want to feel the weight of a problem before the release of its solution. Seeks emotional catharsis.</p></div>
-    <div><h4>Viewing Context</h4><p>Weekend evenings. Good for group watching — the collective dip and recovery mirrors shared dramatic experience. Pairs with redemption arcs in contemporary television.</p></div>
+    <h4>Target Viewers and Viewing Situations</h4>
+    <p>Because this type combines a down-then-up curve with a network that survives the crisis intact, it suits viewers who find tension satisfying when it resolves — those who want to feel the weight of a problem before the relief of its solution. Weekend evenings; good for group viewing.</p>
+    <span class="streaming-badge" style="background:var(--valley-light);color:var(--valley)">Streaming-front example: "Through the Storm — Crisis &amp; Catharsis"</span>
   </div>
 
-  <div class="plays-section-label">All Plays in This Type</div>
-  <div class="play-grid">
-    <div class="play-card"><div class="play-card-head"><h4>A Midsummer Night's Dream</h4><span class="slope-badge">−0.12</span></div><div class="play-card-images"><img src="sentiment_a-midsummer-nights-dream.png" alt=""><img src="network_a-midsummer-nights-dream.png" alt=""></div><div class="play-card-meta"><span>D 0.868</span><span>Q 0.082</span><span>C 2</span><span>W 2.19</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>All's Well That Ends Well</h4><span class="slope-badge">−0.07</span></div><div class="play-card-images"><img src="sentiment_alls-well-that-ends-well.png" alt=""><img src="network_alls-well-that-ends-well.png" alt=""></div><div class="play-card-meta"><span>D 0.500</span><span>Q 0.232</span><span>C 3</span><span>W 2.10</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>The Merchant of Venice</h4><span class="slope-badge">+0.03</span></div><div class="play-card-images"><img src="sentiment_the-merchant-of-venice.png" alt=""><img src="network_the-merchant-of-venice.png" alt=""></div><div class="play-card-meta"><span>D 0.497</span><span>Q 0.168</span><span>C 3</span><span>W 2.05</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>King Lear</h4><span class="slope-badge">−0.01</span></div><div class="play-card-images"><img src="sentiment_king-lear.png" alt=""><img src="network_king-lear.png" alt=""></div><div class="play-card-meta"><span>D 0.654</span><span>Q 0.140</span><span>C 4</span><span>W 2.33</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Henry VI, Part 2</h4><span class="slope-badge">−0.10</span></div><div class="play-card-images"><img src="sentiment_henry-vi-part-2.png" alt=""><img src="network_henry-vi-part-2.png" alt=""></div><div class="play-card-meta"><span>D 0.252</span><span>Q 0.370</span><span>C 6</span><span>W 1.94</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>King John</h4><span class="slope-badge">−0.11</span></div><div class="play-card-images"><img src="sentiment_king-john.png" alt=""><img src="network_king-john.png" alt=""></div><div class="play-card-meta"><span>D 0.485</span><span>Q 0.222</span><span>C 3</span><span>W 1.79</span></div></div>
+  <div class="plays-label">All 7 Plays in This Type</div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Henry V</h4><span class="sb">slope +0.04</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_henry-v.png" alt="Henry V sentiment">
+        <img src="network_henry-v.png" alt="Henry V network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A young king unites his men and wins against the odds at Agincourt.</div>
+        <div class="why">Classic valley: pre-battle dread sinks, victory lifts. The army's bonds hold firm — the resilient core.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.222</span><span>Q 0.453</span><span>C 4</span><span>W 1.57</span></div>
   </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>A Midsummer Night's Dream</h4><span class="sb">slope −0.12</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_a-midsummer-nights-dream.png" alt="A Midsummer Night's Dream sentiment">
+        <img src="network_a-midsummer-nights-dream.png" alt="A Midsummer Night's Dream network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Lovers and fairies tangle in the woods before all is set right.</div>
+        <div class="why">Mid-play confusion dips the mood; resolution restores it. Extremely dense cast (D=0.868) stays intact.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.868</span><span>Q 0.082</span><span>C 2</span><span>W 2.19</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>All's Well That Ends Well</h4><span class="sb">slope −0.07</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_alls-well-that-ends-well.png" alt="All's Well That Ends Well sentiment">
+        <img src="network_alls-well-that-ends-well.png" alt="All's Well That Ends Well network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A woman wins, loses, and finally secures the husband she chose.</div>
+        <div class="why">Down-then-up arc; relationships strained but ultimately mended.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.500</span><span>Q 0.232</span><span>C 3</span><span>W 2.10</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>The Merchant of Venice</h4><span class="sb">slope +0.03</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_the-merchant-of-venice.png" alt="The Merchant of Venice sentiment">
+        <img src="network_the-merchant-of-venice.png" alt="The Merchant of Venice network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A merchant's bond to a moneylender threatens his life before a clever rescue.</div>
+        <div class="why">Trial-scene crisis forms the valley; the friend-group core holds and recovers.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.497</span><span>Q 0.168</span><span>C 3</span><span>W 2.05</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>King Lear</h4><span class="sb">slope −0.01</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_king-lear.png" alt="King Lear sentiment">
+        <img src="network_king-lear.png" alt="King Lear network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A king divides his kingdom, is betrayed, and finds clarity too late.</div>
+        <div class="why">Boundary case — see note below.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.654</span><span>Q 0.140</span><span>C 4</span><span>W 2.33</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Henry VI, Part 2</h4><span class="sb">slope −0.10</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_henry-vi-part-2.png" alt="Henry VI, Part 2 sentiment">
+        <img src="network_henry-vi-part-2.png" alt="Henry VI, Part 2 network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Faction and rebellion erode royal authority.</div>
+        <div class="why">Mid-play breakdown of order; network holds enough structure to register as valley rather than free-fall.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.252</span><span>Q 0.370</span><span>C 6</span><span>W 1.94</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>King John</h4><span class="sb">slope −0.11</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_king-john.png" alt="King John sentiment">
+        <img src="network_king-john.png" alt="King John network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A contested crown drives war, betrayal, and an uneasy settlement.</div>
+        <div class="why">Dips through political crisis then partly recovers; core alliances persist.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.485</span><span>Q 0.222</span><span>C 3</span><span>W 1.79</span></div>
+  </div>
+  <div class="boundary-note"><strong>✦ Boundary case.</strong> King Lear is a boundary case, and an important one. It is universally read as Shakespeare's bleakest tragedy, yet its act-level curve bottoms out in the middle and recovers slightly at the end rather than descending all the way down like Macbeth. We classified it here on that emotional signature: the late scenes carry a fragile, hard-won clarity absent from a pure Macbeth-type descent. Its dense network (D=0.654) also matches the resilient-core pattern. For curation this distinction matters — a viewer ready for catharsis is not the same as one who wants unrelieved devastation.</div>
 </div>
 
-<!-- TYPE 5 -->
-<div id="type5" class="type-section">
+<div id="othello" class="type-section">
   <div class="type-header">
     <div class="type-number" style="color:var(--arch)">⑤</div>
-    <div class="type-header-content">
-      <div class="type-badge" style="background:var(--arch-light);color:var(--arch);">Arch Type · 4 Plays</div>
-      <h2 style="color:var(--arch);">Too High to Fall</h2>
-      <p class="type-tagline">중반 정점 이후 추락 · 가장 높은 순간이 곧 붕괴의 출발점이 된다</p>
-      <div class="type-tags">
-        <span class="tag" style="border-color:#d4a870;color:var(--arch);background:var(--arch-light);">Peak</span>
-        <span class="tag" style="border-color:#d4a870;color:var(--arch);background:var(--arch-light);">Betrayal</span>
-        <span class="tag" style="border-color:#d4a870;color:var(--arch);background:var(--arch-light);">Reversal</span>
-      </div>
+    <div class="type-hc">
+      <div class="type-badge" style="background:var(--arch-light);color:var(--arch)">Othello · 4 plays</div>
+      <h2 style="color:var(--arch)">Othello-type</h2>
+      <div class="type-keyword" style="color:var(--arch)">Inverted Arch + Claustrophobic Closeness</div>
+      <div class="type-tagline">Reaches its emotional peak in the middle acts, then falls toward the end — an inverted arch.</div>
     </div>
   </div>
 
-  <div class="rep-work">
-    <div class="rep-label">Representative Work</div>
-    <div class="rep-title">Othello</div>
-    <div class="rep-images">
-      <div class="rep-img-wrap"><div class="img-label">Sentiment Curve</div><img src="sentiment_othello.png" alt=""></div>
-      <div class="rep-img-wrap"><div class="img-label">Character Network</div><img src="network_othello.png" alt=""></div>
-    </div>
-    <div class="metrics-row">
-      <div class="metric-cell"><span class="m-val" style="color:var(--arch)">−0.12</span><span class="m-lbl">Slope</span></div>
-      <div class="metric-cell"><span class="m-val">0.669</span><span class="m-lbl">Density</span></div>
-      <div class="metric-cell"><span class="m-val">0.175</span><span class="m-lbl">Q Modularity</span></div>
-      <div class="metric-cell"><span class="m-val">3</span><span class="m-lbl">Communities</span></div>
-      <div class="metric-cell"><span class="m-val">2.49</span><span class="m-lbl">Avg Weight</span></div>
-    </div>
-    <div class="network-note" style="border-left-color:var(--arch);">
-      <strong>Network Signature — Structurally Similar to Warm &amp; Bitter:</strong> Dense, unified, heavily interacting cast — yet the emotional arc runs in the opposite direction. The tight network is the dramatic irony: characters who are deeply connected destroy one another precisely because of that closeness. Betrayal from within.
-    </div>
+  <div class="rep-label">Representative Work — Othello</div>
+  <div class="rep-images">
+    <div class="rep-img-wrap"><div class="il">Sentiment Curve</div><img src="sentiment_othello.png" alt="Othello sentiment curve"></div>
+    <div class="rep-img-wrap"><div class="il">Character Network</div><img src="network_othello.png" alt="Othello network"></div>
+  </div>
+
+  <h3>Emotional Flow</h3>
+  <p>Reaches its emotional peak in the middle acts, then falls toward the end — an inverted arch. The highest moment is the beginning of the undoing, making the fall feel structurally prepared rather than accidental.</p>
+  <h3>Character Network</h3>
+  <p>Dense, unified, heavily interacting casts — structurally similar to the Much Ado-type, yet the arc runs opposite. The tight network is the dramatic irony: characters who are intensely close destroy one another precisely because of that closeness. Betrayal from within a claustrophobic space.</p>
+
+  <div class="metrics-row">
+    <div class="metric-cell"><span class="mv" style="color:var(--arch)">−0.12</span><span class="ml">Slope</span></div>
+    <div class="metric-cell"><span class="mv">0.669</span><span class="ml">Density</span></div>
+    <div class="metric-cell"><span class="mv">0.175</span><span class="ml">Q Modularity</span></div>
+    <div class="metric-cell"><span class="mv">3</span><span class="ml">Communities</span></div>
+    <div class="metric-cell"><span class="mv">2.49</span><span class="ml">Avg Weight</span></div>
   </div>
 
   <div class="audience-box">
-    <div><h4>Target Audience</h4><p>Viewers who want a powerful reversal — the satisfaction of seeing how high something goes before it breaks. Appreciates dramatic irony and sharp narrative turns.</p></div>
-    <div><h4>Viewing Context</h4><p>Single-session watch. The arc rewards full attention — the peak-to-fall structure is most effective without interruption. Intense, compact experience.</p></div>
+    <h4>Target Viewers and Viewing Situations</h4>
+    <p>Because this type sets a peak-then-fall curve inside an unusually dense, closed network, it suits viewers who want a powerful reversal and the tension of intimacy turned dangerous — fans of dramatic irony and betrayal from within. Best as a single, uninterrupted session.</p>
+    <span class="streaming-badge" style="background:var(--arch-light);color:var(--arch)">Streaming-front example: "Too High to Fall — Intimate Betrayals"</span>
   </div>
 
-  <div class="plays-section-label">All Plays in This Type</div>
-  <div class="play-grid">
-    <div class="play-card"><div class="play-card-head"><h4>Richard III</h4><span class="slope-badge">+0.08</span></div><div class="play-card-images"><img src="sentiment_richard-iii.png" alt=""><img src="network_richard-iii.png" alt=""></div><div class="play-card-meta"><span>D 0.360</span><span>Q 0.231</span><span>C 4</span><span>W 1.49</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Henry IV, Part 1</h4><span class="slope-badge">+0.05</span></div><div class="play-card-images"><img src="sentiment_henry-iv-part-1.png" alt=""><img src="network_henry-iv-part-1.png" alt=""></div><div class="play-card-meta"><span>D 0.332</span><span>Q 0.425</span><span>C 4</span><span>W 1.77</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>The Comedy of Errors</h4><span class="slope-badge">−0.03</span></div><div class="play-card-images"><img src="sentiment_the-comedy-of-errors.png" alt=""><img src="network_the-comedy-of-errors.png" alt=""></div><div class="play-card-meta"><span>D 0.728</span><span>Q 0.054</span><span>C 3</span><span>W 1.67</span></div></div>
+  <div class="plays-label">All 4 Plays in This Type</div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Othello</h4><span class="sb">slope −0.12</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_othello.png" alt="Othello sentiment">
+        <img src="network_othello.png" alt="Othello network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A general is manipulated into murdering his innocent wife, then himself.</div>
+        <div class="why">The defining inverted arch: marital bliss peaks early, then Iago's poison drags it down. Dense cast (D=0.669) makes the betrayal claustrophobic.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.669</span><span>Q 0.175</span><span>C 3</span><span>W 2.49</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Richard III</h4><span class="sb">slope +0.08</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_richard-iii.png" alt="Richard III sentiment">
+        <img src="network_richard-iii.png" alt="Richard III network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A ruthless schemer murders his way to the crown, then is overthrown.</div>
+        <div class="why">Rises through cunning conquest, peaks at coronation, then falls. Tightly interlinked court of victims and accomplices.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.360</span><span>Q 0.231</span><span>C 4</span><span>W 1.49</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Henry IV, Part 1</h4><span class="sb">slope +0.05</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_henry-iv-part-1.png" alt="Henry IV, Part 1 sentiment">
+        <img src="network_henry-iv-part-1.png" alt="Henry IV, Part 1 network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Prince Hal balances tavern life and rebellion, triumphing at battle.</div>
+        <div class="why">Peak-then-settle arc; dense web linking court, rebels, and the Falstaff circle.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.332</span><span>Q 0.425</span><span>C 4</span><span>W 1.77</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>The Comedy of Errors</h4><span class="sb">slope −0.03</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_the-comedy-of-errors.png" alt="The Comedy of Errors sentiment">
+        <img src="network_the-comedy-of-errors.png" alt="The Comedy of Errors network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Two sets of separated twins cause escalating confusion in one city.</div>
+        <div class="why">Farce builds to a peak of chaos before resolving; very dense (D=0.728), claustrophobic single-city setting.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.728</span><span>Q 0.054</span><span>C 3</span><span>W 1.67</span></div>
   </div>
 </div>
 
-<!-- TYPE 6 -->
-<div id="type6" class="type-section">
+<div id="lll" class="type-section">
   <div class="type-header">
     <div class="type-number" style="color:var(--plateau)">⑥</div>
-    <div class="type-header-content">
-      <div class="type-badge" style="background:var(--plateau-light);color:var(--plateau);">Plateau Type · 3 Plays</div>
-      <h2 style="color:var(--plateau);">Words Over Action</h2>
-      <p class="type-tagline">전구간 감정 변화 최소 · 사건이 아닌 언어와 수사가 이 작품들의 중심이다</p>
-      <div class="type-tags">
-        <span class="tag" style="border-color:#b4b2a9;color:var(--plateau);background:var(--plateau-light);">Sustained Tone</span>
-        <span class="tag" style="border-color:#b4b2a9;color:var(--plateau);background:var(--plateau-light);">Language-Driven</span>
-        <span class="tag" style="border-color:#b4b2a9;color:var(--plateau);background:var(--plateau-light);">Contemplative</span>
-      </div>
+    <div class="type-hc">
+      <div class="type-badge" style="background:var(--plateau-light);color:var(--plateau)">Love's Labor's Lost · 3 plays</div>
+      <h2 style="color:var(--plateau)">Love's Labor's Lost-type</h2>
+      <div class="type-keyword" style="color:var(--plateau)">Sustained Tone + Light Network</div>
+      <div class="type-tagline">Minimal movement across acts. A plateau — consistent in register, sustaining a tone rather than developing one.</div>
     </div>
   </div>
 
-  <div class="rep-work">
-    <div class="rep-label">Representative Work</div>
-    <div class="rep-title">Love's Labor's Lost</div>
-    <div class="rep-images">
-      <div class="rep-img-wrap"><div class="img-label">Sentiment Curve</div><img src="sentiment_loves-labors-lost.png" alt=""></div>
-      <div class="rep-img-wrap"><div class="img-label">Character Network</div><img src="network_loves-labors-lost.png" alt=""></div>
-    </div>
-    <div class="metrics-row">
-      <div class="metric-cell"><span class="m-val" style="color:var(--plateau)">+0.02</span><span class="m-lbl">Slope</span></div>
-      <div class="metric-cell"><span class="m-val">0.843</span><span class="m-lbl">Density</span></div>
-      <div class="metric-cell"><span class="m-val">0.023</span><span class="m-lbl">Q Modularity</span></div>
-      <div class="metric-cell"><span class="m-val">3</span><span class="m-lbl">Communities</span></div>
-      <div class="metric-cell"><span class="m-val">1.76</span><span class="m-lbl">Avg Weight ★</span></div>
-    </div>
-    <div class="network-note" style="border-left-color:var(--plateau);">
-      <strong>Network Signature — Type Lowest Avg Weight (avg 1.54):</strong> Wide network reach with light interaction intensity. Characters are connected but interact less deeply than other types. The structural lightness echoes the content: rhetoric and wit over plot and relationship transformation.
-    </div>
+  <div class="rep-label">Representative Work — Love's Labor's Lost</div>
+  <div class="rep-images">
+    <div class="rep-img-wrap"><div class="il">Sentiment Curve</div><img src="sentiment_loves-labors-lost.png" alt="Love's Labor's Lost sentiment curve"></div>
+    <div class="rep-img-wrap"><div class="il">Character Network</div><img src="network_loves-labors-lost.png" alt="Love's Labor's Lost network"></div>
+  </div>
+
+  <h3>Emotional Flow</h3>
+  <p>Minimal movement across acts. VADER scores stay stable — neither ascending nor descending much. A plateau: consistent in register, without the tension of ascent or weight of descent. These works sustain a tone rather than develop one.</p>
+  <h3>Character Network</h3>
+  <p>Wide reach but the lowest average interaction weight in the corpus (1.54). Characters are connected but interact less deeply. The structural lightness echoes the content: these plays privilege rhetoric and wit over plot and relationship transformation.</p>
+
+  <div class="metrics-row">
+    <div class="metric-cell"><span class="mv" style="color:var(--plateau)">+0.02</span><span class="ml">Slope</span></div>
+    <div class="metric-cell"><span class="mv">0.843</span><span class="ml">Density</span></div>
+    <div class="metric-cell"><span class="mv">0.023</span><span class="ml">Q Modularity</span></div>
+    <div class="metric-cell"><span class="mv">3</span><span class="ml">Communities</span></div>
+    <div class="metric-cell"><span class="mv">1.76</span><span class="ml">Avg Weight</span></div>
   </div>
 
   <div class="audience-box">
-    <div><h4>Target Audience</h4><p>Viewers who come for the language — wordplay, political oratory, formal rhetoric. Those who read supplementary materials and appreciate close engagement with text.</p></div>
-    <div><h4>Viewing Context</h4><p>Daytime or study session viewing. The stable emotional register makes these accessible as focus material. Best approached with text in hand.</p></div>
+    <h4>Target Viewers and Viewing Situations</h4>
+    <p>Because this type holds a steady emotional register over a wide but lightly connected network, it suits viewers who come for language — wordplay, oratory, formal rhetoric — rather than emotional swings. Daytime or focused, text-in-hand viewing.</p>
+    <span class="streaming-badge" style="background:var(--plateau-light);color:var(--plateau)">Streaming-front example: "Words Over Action — Rhetoric &amp; Wit"</span>
   </div>
 
-  <div class="plays-section-label">All Plays in This Type</div>
-  <div class="play-grid">
-    <div class="play-card"><div class="play-card-head"><h4>Richard II</h4><span class="slope-badge">+0.02</span></div><div class="play-card-images"><img src="sentiment_richard-ii.png" alt=""><img src="network_richard-ii.png" alt=""></div><div class="play-card-meta"><span>D 0.325</span><span>Q 0.244</span><span>C 5</span><span>W 1.55</span></div></div>
-    <div class="play-card"><div class="play-card-head"><h4>Henry VIII</h4><span class="slope-badge">−0.02</span></div><div class="play-card-images"><img src="sentiment_henry-viii.png" alt=""><img src="network_henry-viii.png" alt=""></div><div class="play-card-meta"><span>D 0.239</span><span>Q 0.368</span><span>C 5</span><span>W 1.32</span></div></div>
+  <div class="plays-label">All 3 Plays in This Type</div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Love's Labor's Lost</h4><span class="sb">slope +0.02</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_loves-labors-lost.png" alt="Love's Labor's Lost sentiment">
+        <img src="network_loves-labors-lost.png" alt="Love's Labor's Lost network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Four men forswear women to study, then immediately fall in love.</div>
+        <div class="why">Flat, sustained witty register; the play is built on wordplay and rhetoric, mirrored by the light interaction weight.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.843</span><span>Q 0.023</span><span>C 3</span><span>W 1.76</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Richard II</h4><span class="sb">slope +0.02</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_richard-ii.png" alt="Richard II sentiment">
+        <img src="network_richard-ii.png" alt="Richard II network">
+      </div>
+      <div class="play-text">
+        <div class="syn">A king is deposed in a war of words and ceremony more than action.</div>
+        <div class="why">Famously language-driven; near-zero slope. Power shifts through speech, not battle — the lightest of networks.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.325</span><span>Q 0.244</span><span>C 5</span><span>W 1.55</span></div>
+  </div>
+  <div class="play-card">
+    <div class="play-card-head"><h4>Henry VIII</h4><span class="sb">slope −0.02</span></div>
+    <div class="play-body">
+      <div class="play-imgs">
+        <img src="sentiment_henry-viii.png" alt="Henry VIII sentiment">
+        <img src="network_henry-viii.png" alt="Henry VIII network">
+      </div>
+      <div class="play-text">
+        <div class="syn">Court intrigue and royal divorce told through ceremony and rhetoric.</div>
+        <div class="why">Stately, even register; processional and oratorical rather than dynamic — lowest interaction weight in the type.</div>
+      </div>
+    </div>
+    <div class="play-meta"><span>D 0.239</span><span>Q 0.368</span><span>C 5</span><span>W 1.32</span></div>
   </div>
 </div>
 
-<!-- FULL INDEX -->
-<div id="overview" class="section">
-  <p class="section-label">07 — Complete Index</p>
-  <h2>All 37 Plays at a Glance</h2>
-  <p>Complete data for every play analyzed, sorted by type and sentiment slope.</p>
-  <table class="overview-table">
-    <thead>
-      <tr><th>Type</th><th>Play</th><th>Slope</th><th>VADER Mean</th><th>Density</th><th>Q</th><th>C</th><th>Avg W</th></tr>
-    </thead>
-    <tbody>
-      <tr><td><span class="type-dot" style="background:var(--fall)"></span>The Fall</td><td>Titus Andronicus</td><td>−0.24</td><td>0.003</td><td>0.647</td><td>0.156</td><td>3</td><td>1.85</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fall)"></span>The Fall</td><td>Romeo and Juliet</td><td>−0.23</td><td>0.014</td><td>0.581</td><td>0.213</td><td>3</td><td>2.23</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fall)"></span>The Fall</td><td>Macbeth</td><td>−0.19</td><td>−0.010</td><td>0.290</td><td>0.355</td><td>4</td><td>1.63</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fall)"></span>The Fall</td><td>Timon of Athens</td><td>−0.16</td><td>0.047</td><td>0.682</td><td>0.400</td><td>6</td><td>1.38</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fall)"></span>The Fall</td><td>Troilus and Cressida</td><td>−0.16</td><td>0.082</td><td>0.402</td><td>0.231</td><td>2</td><td>2.52</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fall)"></span>The Fall</td><td>Cymbeline</td><td>−0.07</td><td>0.046</td><td>0.446</td><td>0.396</td><td>4</td><td>1.73</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fall)"></span>The Fall</td><td>Julius Caesar</td><td>−0.05</td><td>0.016</td><td>0.409</td><td>0.338</td><td>4</td><td>1.57</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fall)"></span>The Fall</td><td>Hamlet</td><td>−0.04</td><td>0.032</td><td>0.505</td><td>0.238</td><td>3</td><td>2.11</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fade)"></span>Warm &amp; Bitter</td><td>Much Ado About Nothing</td><td>−0.15</td><td>0.118</td><td>0.661</td><td>0.222</td><td>3</td><td>2.27</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fade)"></span>Warm &amp; Bitter</td><td>The Taming of the Shrew</td><td>−0.11</td><td>0.109</td><td>0.691</td><td>0.402</td><td>3</td><td>2.86</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fade)"></span>Warm &amp; Bitter</td><td>Measure for Measure</td><td>−0.11</td><td>0.046</td><td>0.391</td><td>0.170</td><td>3</td><td>1.63</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fade)"></span>Warm &amp; Bitter</td><td>The Merry Wives of Windsor</td><td>−0.09</td><td>0.088</td><td>0.736</td><td>0.049</td><td>3</td><td>2.42</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fade)"></span>Warm &amp; Bitter</td><td>Twelfth Night</td><td>−0.08</td><td>0.086</td><td>0.821</td><td>0.021</td><td>3</td><td>2.53</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fade)"></span>Warm &amp; Bitter</td><td>The Two Gentlemen of Verona</td><td>−0.03</td><td>0.122</td><td>0.508</td><td>0.036</td><td>3</td><td>1.97</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--fade)"></span>Warm &amp; Bitter</td><td>Antony and Cleopatra ✦</td><td>+0.02</td><td>0.072</td><td>0.287</td><td>0.364</td><td>8</td><td>1.85</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--rise)"></span>Against the Odds</td><td>Henry VI, Part 1</td><td>+0.21</td><td>−0.005</td><td>0.276</td><td>0.395</td><td>4</td><td>1.84</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--rise)"></span>Against the Odds</td><td>Henry IV, Part 2</td><td>+0.18</td><td>0.057</td><td>0.248</td><td>0.412</td><td>5</td><td>1.35</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--rise)"></span>Against the Odds</td><td>Pericles</td><td>+0.11</td><td>0.071</td><td>0.166</td><td>0.544</td><td>7</td><td>1.26</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--rise)"></span>Against the Odds</td><td>As You Like It</td><td>+0.10</td><td>0.132</td><td>0.474</td><td>0.253</td><td>4</td><td>1.72</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--rise)"></span>Against the Odds</td><td>The Tempest ✦</td><td>+0.08</td><td>0.068</td><td>0.706</td><td>0.149</td><td>2</td><td>1.82</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--rise)"></span>Against the Odds</td><td>Henry VI, Part 3</td><td>+0.07</td><td>0.034</td><td>0.318</td><td>0.274</td><td>4</td><td>2.10</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--rise)"></span>Against the Odds</td><td>The Winter's Tale</td><td>+0.05</td><td>0.071</td><td>0.432</td><td>0.342</td><td>3</td><td>1.43</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--rise)"></span>Against the Odds</td><td>Coriolanus</td><td>+0.02</td><td>0.054</td><td>0.327</td><td>0.410</td><td>6</td><td>2.08</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--valley)"></span>Break &amp; Mend</td><td>King John</td><td>−0.11</td><td>0.008</td><td>0.485</td><td>0.222</td><td>3</td><td>1.79</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--valley)"></span>Break &amp; Mend</td><td>Henry VI, Part 2</td><td>−0.10</td><td>0.000</td><td>0.252</td><td>0.370</td><td>6</td><td>1.94</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--valley)"></span>Break &amp; Mend</td><td>A Midsummer Night's Dream</td><td>−0.12</td><td>0.115</td><td>0.868</td><td>0.082</td><td>2</td><td>2.19</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--valley)"></span>Break &amp; Mend</td><td>All's Well That Ends Well</td><td>−0.07</td><td>0.110</td><td>0.500</td><td>0.232</td><td>3</td><td>2.10</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--valley)"></span>Break &amp; Mend</td><td>The Merchant of Venice</td><td>+0.03</td><td>0.128</td><td>0.497</td><td>0.168</td><td>3</td><td>2.05</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--valley)"></span>Break &amp; Mend</td><td>Henry V</td><td>+0.04</td><td>0.066</td><td>0.222</td><td>0.453</td><td>4</td><td>1.57</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--valley)"></span>Break &amp; Mend</td><td>King Lear</td><td>−0.01</td><td>−0.014</td><td>0.654</td><td>0.140</td><td>4</td><td>2.33</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--arch)"></span>Too High to Fall</td><td>Othello</td><td>−0.12</td><td>0.026</td><td>0.669</td><td>0.175</td><td>3</td><td>2.49</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--arch)"></span>Too High to Fall</td><td>The Comedy of Errors</td><td>−0.03</td><td>−0.014</td><td>0.728</td><td>0.054</td><td>3</td><td>1.67</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--arch)"></span>Too High to Fall</td><td>Henry IV, Part 1</td><td>+0.05</td><td>0.020</td><td>0.332</td><td>0.425</td><td>4</td><td>1.77</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--arch)"></span>Too High to Fall</td><td>Richard III</td><td>+0.08</td><td>0.013</td><td>0.360</td><td>0.231</td><td>4</td><td>1.49</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--plateau)"></span>Words Over Action</td><td>Love's Labor's Lost</td><td>+0.02</td><td>0.148</td><td>0.843</td><td>0.023</td><td>3</td><td>1.76</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--plateau)"></span>Words Over Action</td><td>Richard II</td><td>+0.02</td><td>0.005</td><td>0.325</td><td>0.244</td><td>5</td><td>1.55</td></tr>
-      <tr><td><span class="type-dot" style="background:var(--plateau)"></span>Words Over Action</td><td>Henry VIII</td><td>−0.02</td><td>0.104</td><td>0.239</td><td>0.368</td><td>5</td><td>1.32</td></tr>
-    </tbody>
-  </table>
-  <p style="font-size:12px;color:var(--muted);margin-top:12px;">✦ Boundary cases. Slope = Act5 − Act1 VADER mean. C = Communities (Leiden). Q = Modularity.</p>
-</div>
-
-<!-- REFLECTION -->
-<div id="reflection" class="section">
-  <p class="section-label">08 — Reflection &amp; Conclusion</p>
-  <h2 class="h2-rise">What the Data Reveals</h2>
-  <p>The most striking result of this classification is how little traditional genre boundaries predict emotional experience. Several significant findings run directly against received wisdom — and it is precisely these surprises that demonstrate the value of a data-driven approach over inherited categorization.</p>
+<div id="conclusion" class="section">
+  <p class="section-label">04 — Conclusion</p>
+  <h2 style="color:var(--rise)">Summary and Significance</h2>
+  <p>This project set out to test whether Shakespeare's 37 plays could be classified for streaming curation using only two measurable dimensions — emotional trajectory and character network structure — without relying on the traditional comedy / tragedy / history labels. The answer is yes: six internally consistent types emerged from the data, each named after a representative work, each defined by a coherent combination of emotional arc and network signature, and each producing a distinct, recognizable viewing experience.</p>
+  <p>The methodological contribution is a classification framework that is reproducible, data-grounded, and decoupled from genre tradition. Any new work — Shakespearean or otherwise — can be scored on the same two dimensions and assigned to a type or flagged as a boundary case. The framework converts a curation problem (which usually relies on human-written tags) into a measurement problem (which can be applied at scale).</p>
+  <p>The substantive contribution is the demonstration that these data-driven types cut across traditional genre lines in ways that better predict how a work feels to watch.</p>
 
   <div class="finding-grid">
-    <div class="finding-card">
-      <span class="finding-num">Finding 01</span>
-      <h3>Othello belongs with the comedies — structurally</h3>
-      <p><em>Othello</em> is universally taught as a tragedy, yet its network profile — high density (0.669), low modularity (0.175), heavy interaction weight (2.49) — is identical to the Warm &amp; Bitter type dominated by comedies. The intimacy that makes those plays warm is the same intimacy that makes Othello catastrophic. The data reveals a structural irony that close reading has always sensed but never quantified: these works share an architecture of closeness, and it is closeness itself that determines whether the result is warmth or devastation.</p>
-    </div>
-    <div class="finding-card">
-      <span class="finding-num">Finding 02</span>
-      <h3>The Henry VI trilogy is one emotional journey, not three plays</h3>
-      <p>Part 1 and Part 3 belong to <em>Against the Odds</em> (rising arc); Part 2 belongs to <em>Break &amp; Mend</em> (valley recovery). Traditional classification treats all three as "histories." The data reveals something more precise: the trilogy enacts a complete emotional arc — descent into crisis, partial recovery, hard-won ascent. Watching the three plays as a single unit produces the same shape as a single Valley-type play. The genre label flattens what is actually a macro-structure.</p>
-    </div>
-    <div class="finding-card">
-      <span class="finding-num">Finding 03</span>
-      <h3>King Lear is not The Fall — it is Break &amp; Mend</h3>
-      <p>Perhaps the most counterintuitive placement: <em>King Lear</em>, Shakespeare's bleakest tragedy, sits alongside <em>A Midsummer Night's Dream</em> and <em>Henry V</em>. Its act-level curve bottoms in the middle acts and recovers slightly toward the end. The data captures something close reading confirms: Lear's final scenes carry a fragile, hard-won clarity that is entirely absent from the unrelenting descent of <em>Macbeth</em> or <em>Timon of Athens</em>. The difference matters for curation — a viewer prepared for catharsis is not the same viewer who wants only devastation.</p>
-    </div>
-    <div class="finding-card">
-      <span class="finding-num">Finding 04</span>
-      <h3>The Plateau type is defined by language, not genre</h3>
-      <p><em>Love's Labor's Lost</em> (comedy), <em>Richard II</em> (history), and <em>Henry VIII</em> (history) share minimal emotional movement and the corpus's lowest average interaction weight. What unites them across genre boundaries is a primacy of rhetoric over event — plays where language is the action. The data-derived type aligns with what scholars have long observed in each work individually but genre classification never encoded as a coherent group.</p>
-    </div>
+    <div class="finding-card"><span class="finding-num">Finding 01</span><h3>Othello shares its structure with the comedies</h3><p>Othello, a tragedy, has the dense, tightly-bound network of the Much Ado-type comedies. That shared closeness is precisely what makes its betrayal devastating — intimacy turned lethal.</p></div>
+    <div class="finding-card"><span class="finding-num">Finding 02</span><h3>The Henry VI trilogy splits across two types</h3><p>Parts 1 and 3 sit in the rising As You Like It-type; Part 2 in the valley-shaped Henry V-type. Together they form a single descent-and-recovery shape that the "history" label flattens.</p></div>
+    <div class="finding-card"><span class="finding-num">Finding 03</span><h3>King Lear is recovery-shaped, not pure descent</h3><p>The bleakest tragedy lands in the Henry V-type, not the Macbeth-type — its late scenes carry a fragile clarity that a genre label cannot register.</p></div>
+    <div class="finding-card"><span class="finding-num">Finding 04</span><h3>Language unites across genre</h3><p>The flat Love's Labor's Lost-type groups a comedy and two histories that share rhetoric-over-plot — a connection genre classification would never make.</p></div>
   </div>
 
-  <h3>Limitations</h3>
-  <p>Three constraints should inform how this classification is applied. First, VADER was calibrated for modern English. Its scores for Early Modern verse are imperfect — it may misread archaic negation, irony, or sustained metaphor. LOWESS smoothing reduces noise but cannot correct systematic bias in the lexicon itself.</p>
-  <p>Second, speech co-occurrence captures shared scenic space, not the full complexity of relational dynamics — power, affect, conflict, and silence are not differentiated. Two characters arguing violently and two conversing warmly register identically if their frequency of co-occurrence is the same.</p>
-  <p>Third, this classification reflects the original English texts. Productions in translation, significant adaptation, or with major cuts may shift both the emotional trajectory and the network structure substantially. The typology is a property of the text, not of any particular performance.</p>
+  <p style="margin-top:28px;">For the streaming platform, this translates directly into curation logic. A viewer who finishes one Macbeth-type work can be reliably recommended another, regardless of whether tradition calls it a tragedy or a history. The six types map cleanly onto familiar front-end categories — prestige tragedy, bittersweet ensemble, journey of renewal, crisis-and-catharsis, intimate betrayal, and rhetorical wit — and the same two-dimensional method can be extended to the platform's wider film and series library.</p>
 
-  <h3>Application to the Streaming Library</h3>
-  <p>The six types map directly onto recommendation logics that streaming platforms already use. <em>The Fall</em> and <em>Too High to Fall</em> serve the prestige drama audience — viewers who gravitate toward long-form psychological tragedy. <em>Warm &amp; Bitter</em> and <em>Break &amp; Mend</em> serve ensemble and catharsis audiences. <em>Against the Odds</em> functions as motivational or recovery content. <em>Words Over Action</em> serves the literary audience who approaches Shakespeare as text rather than spectacle.</p>
-  <p>The methodology is also portable beyond Shakespeare. The same two-dimensional framework — emotional trajectory plus relational density — could be applied to any dramatic corpus with available text data. Genre labels are a product of institutional history. Emotional experience is what viewers actually navigate. This project proposes that the latter is a more reliable foundation for curation at scale.</p>
+  <h3>Limitations and Future Directions</h3>
+  <p><strong>1. Sentiment tool calibration.</strong> VADER was trained on modern English and may misread Early Modern verse — archaic negation, sustained irony, and metaphor can be scored incorrectly. A sentiment model fine-tuned on period texts would improve accuracy and may resolve some boundary cases.</p>
+  <p><strong>2. Network signal is structural, not qualitative.</strong> Speech co-occurrence captures that two characters share a scene, not the nature of their interaction. Adding sentiment-weighted or directional edges would capture relationship quality, not just quantity.</p>
+  <p><strong>3. Boundary cases need confidence scoring.</strong> Antony and Cleopatra, The Tempest, and King Lear each fit their type on one dimension while diverging on the other. A production system would benefit from confidence scores or multi-tag assignments rather than forcing every title into one box.</p>
+  <p><strong>4. Text, not performance.</strong> The analysis reflects original English scripts. Translations, cuts, or reinterpretive stagings can shift both the emotional arc and the network, so the typology describes the text rather than any single production.</p>
+  <p style="margin-top:16px;">These limitations define the agenda for the next stage: refining the sentiment model, enriching the network signal, building a confidence-scoring layer, and validating against specific adaptations. The system presented here is a working foundation — small enough to deploy, principled enough to extend.</p>
 </div>
 
-<!-- REFERENCES -->
 <div class="section">
-  <p class="section-label">09 — References</p>
+  <p class="section-label">05 — References</p>
   <h2>Data Sources &amp; Tools</h2>
   <table class="criteria-table">
     <thead><tr><th>Source / Tool</th><th>Role</th></tr></thead>
     <tbody>
-      <tr><td>Folger Shakespeare Library Digital Texts</td><td>Primary text corpus — all 37 plays</td></tr>
-      <tr><td>VADER (Hutto &amp; Gilbert, 2014)</td><td>Scene-level sentiment scoring</td></tr>
-      <tr><td>LOWESS Smoothing (bandwidth 200)</td><td>Emotional arc smoothing across scenes</td></tr>
-      <tr><td>coolmintmild.github.io/shakespeare-sentiment</td><td>Sentiment analysis interface</td></tr>
-      <tr><td>coolmintmild.github.io/shakespeare-network</td><td>Network analysis interface</td></tr>
-      <tr><td>Leiden Algorithm (Traag et al., 2019)</td><td>Character community detection</td></tr>
-      <tr><td>Hutto, C.J. &amp; Gilbert, E. (2014). VADER: A Parsimonious Rule-based Model for Sentiment Analysis of Social Media Text. <em>ICWSM</em>.</td><td>VADER methodology</td></tr>
-      <tr><td>Traag, V.A., Waltman, L., &amp; van Eck, N.J. (2019). From Louvain to Leiden: guaranteeing well-connected communities. <em>Scientific Reports</em>, 9, 5233.</td><td>Leiden algorithm</td></tr>
+      <tr><td>Shakespeare Sentiment Analyzer</td><td>Scene-level VADER scoring and LOWESS smoothing for all 37 plays</td></tr>
+      <tr><td>Shakespeare Network Analyzer</td><td>Speech co-occurrence networks with Leiden community detection</td></tr>
+      <tr><td>Hutto &amp; Gilbert (2014)</td><td>VADER methodology — ICWSM</td></tr>
+      <tr><td>Cleveland (1979)</td><td>LOWESS smoothing — JASA 74(368)</td></tr>
+      <tr><td>Traag, Waltman &amp; van Eck (2019)</td><td>Leiden algorithm — Scientific Reports 9, 5233</td></tr>
     </tbody>
   </table>
 </div>
 
 <footer>
-  <p style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;margin-bottom:8px;">
-    <span style="color:var(--fall)">Lear,</span>
-    <span style="color:var(--fade)"> Lover,</span>
-    <span style="color:var(--rise)"> or Lunatic</span>
-  </p>
+  <p style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;margin-bottom:8px;"><span style="color:var(--fall)">Lear,</span><span style="color:var(--fade)"> Lover,</span><span style="color:var(--rise)"> or Lunatic</span></p>
   <p>Mapping Shakespeare for the Streaming Library</p>
   <p style="margin-top:8px;">우재성 · 김현아 · 주지현 · 진일명</p>
   <p style="margin-top:16px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#aaa;">37 Plays · 6 Types · 0 Pre-assigned Genres</p>
 </footer>
-
 </body>
 </html>
